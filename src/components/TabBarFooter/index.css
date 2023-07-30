@@ -1,0 +1,45 @@
+.footer-main{
+    display: flex;
+    width: 100%;
+    border-top: 1px grey solid;
+}
+.details{
+    display: flex;
+    flex-direction: column;
+    margin: 0px 5px;
+}
+.name{
+
+    padding: 0px;
+    margin: 0px;
+    color: #505887;
+    
+        /* Text sm / Semibold */
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 20px;
+        /* 142.857% */
+}
+.email{
+    margin: 0px;
+    padding: 0px;
+    color: #718EBF;
+        font-family: Inter;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px;
+        /* 142.857% */
+}
+.avatar{
+    overflow: hidden;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+.avatar-img{
+    height: 100%;
+    width: 100%;
+}

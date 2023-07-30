@@ -1,0 +1,23 @@
+.home-container{
+    height: 100vh;
+    width: 100%;
+
+    display: flex;
+    flex-wrap: wrap;
+}
+
+@media all and (max-width: 768px) {
+    .home-container{
+        display: flex;
+        flex-direction: column;
+        min-height: 200vh;
+    }
+    .order-2{
+        border-top: 1px grey solid;
+        order: 2;
+        justify-self: flex-end;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+    }
+}
