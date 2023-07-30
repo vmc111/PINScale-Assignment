@@ -1,7 +1,6 @@
 .footer-main{
     display: flex;
     width: 100%;
-    border-top: 1px grey solid;
 }
 .details{
     display: flex;

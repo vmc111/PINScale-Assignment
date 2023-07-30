@@ -24,12 +24,29 @@ const DebitCreditView = () => {
     // setData(data);
   };
 
+  const config = {
+    type: "bar",
+    data: data,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: "top",
+        },
+        title: {
+          display: true,
+          text: "Chart.js Bar Chart",
+        },
+      },
+    },
+  };
+
   console.log(data);
   return (
     <div className="main-container">
       <h1 className="main-heading">Debit & Credit Overview</h1>
       <div className="container">
-        <h1>implement recharts here</h1>
+        <div></div>
         <Button
           onClick={() => getLast7DaysTransactions()}
           variant="contained"

@@ -1,20 +1,37 @@
 import { useState } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+import { TailSpin as Loader } from "react-loader-spinner";
+import Button from "@mui/material/Button";
 import "./index.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [erroeMsg, setErrorMsg] = useState("");
-  console.log(email);
+  const [erroeMsg, setErrorMsg] = useState({ showErrorMsg: false, msg: "" });
+  const [isLoading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const userId = Cookies.get("USER_ID");
+  if (userId !== undefined) {
+    navigate("/");
+  }
+
+  const dataFormat = (data) => ({
+    getUserId: data.get_user_id,
+  });
+
+  const onLoginApprove = (data) => {
+    Cookies.set("USER_ID", data.getUserId[0].id);
+    navigate("/");
+  };
 
   const loginUser = async (e) => {
     e.preventDefault();
-    const url = "https://bursting-gelding-24.hasura.app/api/rest/get-user-id";
-    const user = {
-      email,
-      password,
-    };
+    setErrorMsg({ showErrorMsg: false, msg: "" });
+    setLoading(true);
+    const newUrl = `https://bursting-gelding-24.hasura.app/api/rest/get-user-id?email=${email}&password=${password}`;
     const options = {
       method: "GET",
       headers: {
@@ -22,28 +39,20 @@ const Login = () => {
         "x-hasura-admin-secret":
           "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
       },
-      body: JSON.stringify(user),
     };
-    console.log(options);
-    const response = await fetch(url, options);
-
-    //   const response = await axios.get(
-    //     url,
-    //     {
-    //       email: "jane.doe@gmail.com",
-    //       password: "janedoe@123",
-    //     },
-    //     {
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         "x-hasura-admin-secret":
-    //           "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
-    //         // Add more headers as needed
-    //       },
-    //     }
-    //   );
-
-    console.log(response.data);
+    const response = await fetch(newUrl, options);
+    const data = await response.json();
+    if (response.ok) {
+      const formattedData = dataFormat(data);
+      console.log(formattedData.getUserId[0]);
+      formattedData.getUserId.length !== 0
+        ? onLoginApprove(formattedData)
+        : setErrorMsg({ showErrorMsg: true, msg: "Invalid Login credentials" });
+    } else {
+      console.log(data.error);
+      setErrorMsg({ showErrorMsg: true, msg: data.error });
+    }
+    setLoading(false);
   };
 
   return (
@@ -82,10 +91,18 @@ const Login = () => {
               placeholder="Password"
             />
           </div>
-          <button className="form-button" type="submit">
+          <Button
+            variant="contained"
+            fullWidth
+            className="form-button"
+            type="submit"
+          >
             Login
-          </button>
-          <p className="error-msg">{erroeMsg}</p>
+          </Button>
+          {isLoading ? <Loader color="#3449eb" height={20} /> : null}
+          {erroeMsg.showErrorMsg ? (
+            <p className="error-msg">*{erroeMsg.msg}</p>
+          ) : null}
         </form>
       </div>
     </div>

@@ -67,13 +67,11 @@
         display: none;
     }
     .mobile-tabs{
-        display: block;
+        display: flex;
+        justify-content: space-around;
     }
     .active-tab{
         border: none;
         border-bottom: 4px solid #0b1f93;
-    }
-    .css-bsqp9w-MuiSvgIcon-root{
-        width: 2em;
     }
 }
