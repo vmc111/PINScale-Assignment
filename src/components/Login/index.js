@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { TailSpin as Loader } from "react-loader-spinner";
@@ -14,10 +14,11 @@ const Login = () => {
   const navigate = useNavigate();
 
   const userId = Cookies.get("USER_ID");
-  if (userId !== undefined) {
-    navigate("/");
-  }
-
+  useEffect(() => {
+    if (userId !== undefined) {
+      navigate("/");
+    }
+  }, []);
   const dataFormat = (data) => ({
     getUserId: data.get_user_id,
   });

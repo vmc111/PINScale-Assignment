@@ -14,6 +14,7 @@ import {
 } from "recharts";
 
 import "./index.css";
+import { Outlet } from "react-router-dom";
 
 const Home = () => {
   const data = [
@@ -63,12 +64,10 @@ const Home = () => {
 
   return (
     <>
-      <Header headerText={"Home"} />
       <div className="home-container">
-        <div className="order-2">
-          <TabBar />
-        </div>
-        <div className="home-page">
+        <TabBar />
+        {/* <div className="home-page">
+          <Header headertext={"Home"} />
           <DebitCreditView />
           <ResponsiveContainer width="100%" height="50%">
             <BarChart
@@ -91,7 +90,11 @@ const Home = () => {
               <Bar dataKey="uv" fill="#82ca9d" />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+          <div className="dummy">
+            <h1>Test</h1>
+          </div>
+        </div> */}
+        <Outlet />
       </div>
     </>
   );

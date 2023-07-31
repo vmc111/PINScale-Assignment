@@ -1,7 +1,10 @@
 import LogoutIcon from "@mui/icons-material/Logout";
 import "./index.css";
 
-const TabBarFooter = () => {
+const TabBarFooter = (props) => {
+  const { userData } = props;
+  // console.log("userData Id: ", props.userData);
+  const { name, email } = userData;
   return (
     <div className="footer-main">
       <div className="avatar">
@@ -12,8 +15,8 @@ const TabBarFooter = () => {
         />
       </div>
       <div className="details">
-        <p className="name">Priya</p>
-        <p className="email">priya23@gmail.com.......</p>
+        <p className="name">{name}</p>
+        <p className="email">{email}</p>
       </div>
       <div>
         <LogoutIcon fontSize="small" color="primary" />
