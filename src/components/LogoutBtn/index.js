@@ -18,7 +18,7 @@ class LogoutBtn extends Component {
   onLogOut = () => {
     Cookies.remove("secret_token");
 
-    // <Navigate to="/login" replace={true} />;
+    <Navigate to="/login" replace={true} />;
 
     window.location.reload("/login");
   };
