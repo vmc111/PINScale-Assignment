@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/PINScale-Assignment/static/css/main.a8afb62a.css",
-    "main.js": "/PINScale-Assignment/static/js/main.4dfe7942.js",
+    "main.js": "/PINScale-Assignment/static/js/main.6e158b6b.js",
     "static/js/787.501467bb.chunk.js": "/PINScale-Assignment/static/js/787.501467bb.chunk.js",
     "index.html": "/PINScale-Assignment/index.html",
     "main.a8afb62a.css.map": "/PINScale-Assignment/static/css/main.a8afb62a.css.map",
-    "main.4dfe7942.js.map": "/PINScale-Assignment/static/js/main.4dfe7942.js.map",
+    "main.6e158b6b.js.map": "/PINScale-Assignment/static/js/main.6e158b6b.js.map",
     "787.501467bb.chunk.js.map": "/PINScale-Assignment/static/js/787.501467bb.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.a8afb62a.css",
-    "static/js/main.4dfe7942.js"
+    "static/js/main.6e158b6b.js"
   ]
 }
