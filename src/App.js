@@ -1,23 +1,24 @@
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+
 import Login from "./components/Login";
-import Home from "./components/Home";
-import Transactions from "./components/Transactions";
+
+import Accounts from "./components/Accounts";
+
 import Profile from "./components/Profile";
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import TransactionRoute from "./components/TranscationRoute";
+
 import "./App.css";
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Home />}>
-          <Route path="/transactions" element={<Transactions />} />
-          <Route path="/profile" element={<Profile />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
-}
+const App = () => (
+  <BrowserRouter>
+    <Routes>
+      <Route exact path="/login" element={<Login />} />
+      <Route exact path="/" element={<Accounts />} />
+      <Route exact path="/transactions" element={<TransactionRoute />} />
+      <Route exact path="/profile" element={<Profile />} />
+    </Routes>
+  </BrowserRouter>
+);
 
 export default App;

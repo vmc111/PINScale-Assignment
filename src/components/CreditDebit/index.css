@@ -1,0 +1,13 @@
+.creditdebit-container {
+    display: flex;
+}
+
+.loader {
+    background-color: #fff;
+    border-radius: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    margin: 20px;
+}

@@ -1,0 +1,43 @@
+.sidebar-container {
+  position: relative;
+  width: 250px;
+  height: 100vh;
+  border-right: 1px solid #e2e2e2;
+  background-color: #fff;
+}
+
+.logo-container {
+  padding: 20px;
+}
+.link-li-container {
+  list-style-type: none;
+  position: relative;
+}
+
+.link-item {
+  text-decoration: none;
+  color: #505887;
+}
+
+.list-item {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.active-item {
+  color: #2d60ff;
+  display: flex;
+  align-items: center;
+}
+
+.active-item::before {
+  content: "";
+  background-color: #2d60ff;
+  padding: 5px;
+  height: 30px;
+  position: absolute;
+  left: -5px;
+  border-radius: 5px;
+}
