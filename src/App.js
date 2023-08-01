@@ -11,7 +11,7 @@ import TransactionRoute from "./components/TranscationRoute";
 import "./App.css";
 
 const App = () => (
-  <BrowserRouter>
+  <BrowserRouter basename={process.env.PUBLIC_URL}>
     <Routes>
       <Route exact path="/login" element={<Login />} />
       <Route exact path="/" element={<Accounts />} />
