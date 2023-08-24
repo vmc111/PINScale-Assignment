@@ -15,7 +15,7 @@ const statusOfPage = {
   Failed: "FAILED",
 };
 
-const TransactionRouteList = (props) => {
+const TransactionRouteList = () => {
   const [status, setStatus] = useState(statusOfPage.initial); // to update the page's status
   const [allTxnsList, setAllTxnsList] = useState([]);
   const [filteredlist, setFilteredList] = useState([]);
