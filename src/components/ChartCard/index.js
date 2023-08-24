@@ -132,8 +132,20 @@ class ChartCard extends Component {
             }}
           />
 
-          <Bar dataKey="debit" name="Debit" fill="#1f77b4" barSize="10%" />
-          <Bar dataKey="credit" name="Credit" fill="#fd7f0e" barSize="10%" />
+          <Bar
+            dataKey="debit"
+            name="Debit"
+            fill="#1f77b4"
+            barSize="20%"
+            radius={(10, 10, 10, 10)}
+          />
+          <Bar
+            dataKey="credit"
+            name="Credit"
+            fill="#fd7f0e"
+            barSize="20%"
+            radius={(10, 10, 10, 10)}
+          />
         </BarChart>
       </ResponsiveContainer>
     );

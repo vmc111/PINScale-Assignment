@@ -1,7 +1,5 @@
 import { Component } from "react";
 
-// import { Navigate } from "react-router-dom";
-
 import Cookies from "js-cookie";
 
 import Navbar from "../Navbar";
@@ -56,7 +54,7 @@ class Profile extends Component {
       const response = await fetch(ReqUrl, requestOptions);
 
       const result = await response.json();
-      console.log("llr", result.users);
+      console.log("User", result.users);
 
       const user = {
         city: result.users[0].city,

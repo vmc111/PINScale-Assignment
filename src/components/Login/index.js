@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { TailSpin as Loader } from "react-loader-spinner";
-// import Button from "@mui/material/Button";
 import "./index.css";
 
 const Login = () => {
@@ -11,7 +10,6 @@ const Login = () => {
   const [erroeMsg, setErrorMsg] = useState({ showErrorMsg: false, msg: "" });
   const [isLoading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-
   const navigate = useNavigate();
 
   const dataFormat = (data) => ({
@@ -38,7 +36,6 @@ const Login = () => {
 
     Cookies.set("secret_token", JSON.stringify(userDetails), {
       expires: 30,
-      path: "/",
     });
     navigate("/");
   };
@@ -68,6 +65,7 @@ const Login = () => {
       formattedData.getUserId.length !== 0
         ? onLoginApprove(formattedData)
         : setErrorMsg({ showErrorMsg: true, msg: "Invalid Login credentials" });
+      onLoginApprove(formattedData);
     } else {
       console.log(data.error);
       setErrorMsg({ showErrorMsg: true, msg: data.error });

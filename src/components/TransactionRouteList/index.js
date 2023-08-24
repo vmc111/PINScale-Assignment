@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useEffect, useState } from "react";
 
 import { TailSpin } from "react-loader-spinner";
 
@@ -9,41 +9,36 @@ import TransactionsRouteListItems from "../TransactionsRouteListItems";
 import "./index.css";
 
 const statusOfPage = {
+  initial: "INTIAL",
   Loading: "LOADING",
   Succcess: "SUCCESS",
   Failed: "FAILED",
 };
 
-class TransactionRouteList extends Component {
-  state = {
-    status: statusOfPage.Loading,
-    allTxnsList: [],
-    filteredlist: [],
-    userCreds: {},
-  };
+const TransactionRouteList = (props) => {
+  const [status, setStatus] = useState(statusOfPage.initial); // to update the page's status
+  const [allTxnsList, setAllTxnsList] = useState([]);
+  const [filteredlist, setFilteredList] = useState([]);
+  const [activeBtn, setActiveBtn] = useState("");
 
-  componentDidMount() {
+  useEffect(() => {
+    fetchTxnDetails();
+  }, []);
+
+  const fetchTxnDetails = async () => {
+    setStatus(statusOfPage.Loading);
+
     const userCreds = Cookies.get("secret_token");
-
-    console.log(userCreds);
 
     const parsedObject = JSON.parse(userCreds);
 
-    userCreds !== undefined &&
-      this.setState({ userCreds: parsedObject }, this.fetchTxnDetails);
-  }
-
-  fetchTxnDetails = async () => {
-    this.setState({ status: statusOfPage.Loading });
-
-    const { userCreds } = this.state;
-
-    const { userId, isAdmin } = userCreds;
+    const { userId, isAdmin } = parsedObject;
+    console.log("userId", userId);
 
     const role = isAdmin ? "admin" : "user";
 
     const ReqUrl =
-      "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0";
+      "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=1000&offset=1";
 
     var myHeaders = new Headers();
     myHeaders.append("content-type", "application/json");
@@ -52,7 +47,7 @@ class TransactionRouteList extends Component {
       "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF"
     );
     myHeaders.append("x-hasura-role", role);
-    myHeaders.append("x-hasura-user-id", `${userId}`);
+    myHeaders.append("x-hasura-user-id", userId);
 
     var requestOptions = {
       method: "GET",
@@ -83,42 +78,33 @@ class TransactionRouteList extends Component {
       });
 
       const ListOfTxns = sortedData.reverse();
-
-      this.setState({
-        status: statusOfPage.Succcess,
-        allTxnsList: ListOfTxns,
-        filteredlist: ListOfTxns,
-        activeBtn: "AllTxn",
-      });
+      setAllTxnsList(ListOfTxns);
+      setFilteredList(ListOfTxns);
+      setStatus(statusOfPage.Succcess);
+      setActiveBtn("AllTxn");
     } catch (error) {
-      this.setState({ status: statusOfPage.Failed });
+      setStatus(statusOfPage.Failed);
     }
   };
 
-  onClickCredit = () => {
-    const { allTxnsList } = this.state;
-
+  const onClickCredit = () => {
     const filteredData = allTxnsList.filter((each) => each.type === "credit");
-
-    this.setState({ filteredlist: filteredData, activeBtn: "credit" });
+    setFilteredList(filteredData);
+    setActiveBtn("Credit");
   };
 
-  onClickDebit = () => {
-    const { allTxnsList } = this.state;
-
+  const onClickDebit = () => {
     const filteredData = allTxnsList.filter((each) => each.type === "debit");
-
-    this.setState({ filteredlist: filteredData, activeBtn: "debit" });
+    setFilteredList(filteredData);
+    setActiveBtn("Debit");
   };
 
-  onAllTxns = () => {
-    const { allTxnsList } = this.state;
-    this.setState({ filteredlist: allTxnsList, activeBtn: "AllTxn" });
+  const onAllTxns = () => {
+    setFilteredList(allTxnsList);
+    setActiveBtn("AllTxn");
   };
 
-  successView = () => {
-    const { filteredlist, activeBtn } = this.state;
-
+  const successView = () => {
     const isAllTxnActive =
       "AllTxn" === activeBtn ? "txn-btn active-txn-btn" : "txn-btn";
     const isCreditActive =
@@ -129,24 +115,20 @@ class TransactionRouteList extends Component {
     return (
       <div className="transactions-route-container">
         <div className="btns-container">
-          <button
-            type="button"
-            className={isAllTxnActive}
-            onClick={this.onAllTxns}
-          >
+          <button type="button" className={isAllTxnActive} onClick={onAllTxns}>
             All Transactions
           </button>
           <button
             type="button"
             className={isDebitActive}
-            onClick={this.onClickDebit}
+            onClick={onClickDebit}
           >
             Debit
           </button>
           <button
             type="button"
             className={isCreditActive}
-            onClick={this.onClickCredit}
+            onClick={onClickCredit}
           >
             Credit
           </button>
@@ -168,33 +150,33 @@ class TransactionRouteList extends Component {
     );
   };
 
-  loadingView = () => (
+  const loadingView = () => (
     <div className="loader">
       <TailSpin color="#0b69ff" height="50" width="50" />
     </div>
   );
 
-  failedView = () => (
+  const tryAgain = () => {};
+
+  const failedView = () => (
     <div>
-      <button type="button" className="btn" onClick={this.tryAgain}>
+      <button type="button" className="btn" onClick={tryAgain}>
         Try Again
       </button>
     </div>
   );
-  render() {
-    const { status } = this.state;
-    switch (status) {
-      case statusOfPage.Loading:
-        return this.loadingView();
-      case statusOfPage.Succcess:
-        return this.successView();
-      case statusOfPage.Failed:
-        return this.failedView();
 
-      default:
-        return null;
-    }
+  switch (status) {
+    case statusOfPage.Loading:
+      return loadingView();
+    case statusOfPage.Succcess:
+      return successView();
+    case statusOfPage.Failed:
+      return failedView();
+
+    default:
+      return null;
   }
-}
+};
 
 export default TransactionRouteList;

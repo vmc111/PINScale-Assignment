@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useState } from "react";
 
 import Popup from "reactjs-popup";
 
@@ -10,13 +10,13 @@ import { HiOutlineTrash } from "react-icons/hi";
 
 import "reactjs-popup/dist/index.css";
 
-class DeletePopup extends Component {
-  state = { txnDetails: {}, userCreds: {} };
+const DeletePopup = (props) => {
+  // state = { txnDetails: {}, userCreds: {} };
+  const [txnDetails, setTxnDetails] = useState({});
+  const [userCreds, setUserCreds] = useState({});
 
-  componentDidMount() {}
-
-  onDelTxn = async () => {
-    const { id } = this.props;
+  const onDelTxn = async () => {
+    const { id } = props;
 
     const userCreds = Cookies.get("secret_token");
 
@@ -52,45 +52,43 @@ class DeletePopup extends Component {
     }
   };
 
-  render() {
-    return (
-      <div className="popup-container">
-        <Popup
-          modal
-          trigger={
-            <button type="button" className="delete-btn">
-              <HiOutlineTrash size={25} />
-            </button>
-          }
-        >
-          {(close) => (
-            <div className="logout-container">
-              <LuAlertTriangle
-                color="#D97706"
-                size={40}
-                className="logout-logo"
-              />
+  return (
+    <div className="popup-container">
+      <Popup
+        modal
+        trigger={
+          <button type="button" className="delete-btn">
+            <HiOutlineTrash size={25} />
+          </button>
+        }
+      >
+        {(close) => (
+          <div className="logout-container">
+            <LuAlertTriangle
+              color="#D97706"
+              size={40}
+              className="logout-logo"
+            />
+            <div>
+              <p className="sure-text">Are you sure you want to Delete?</p>
+              <p>
+                This transaction will be deleted immediately. You can’t undo
+                this action.
+              </p>
               <div>
-                <p className="sure-text">Are you sure you want to Delete?</p>
-                <p>
-                  This transaction will be deleted immediately. You can’t undo
-                  this action.
-                </p>
-                <div>
-                  <button className="logout-btn" onClick={this.onDelTxn}>
-                    Yes, Delete
-                  </button>
-                  <button className="cancel-btn" onClick={() => close()}>
-                    No, Leave it
-                  </button>
-                </div>
+                <button className="logout-btn" onClick={onDelTxn}>
+                  Yes, Delete
+                </button>
+                <button className="cancel-btn" onClick={() => close()}>
+                  No, Leave it
+                </button>
               </div>
             </div>
-          )}
-        </Popup>
-      </div>
-    );
-  }
-}
+          </div>
+        )}
+      </Popup>
+    </div>
+  );
+};
 
 export default DeletePopup;

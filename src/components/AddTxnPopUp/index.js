@@ -118,7 +118,6 @@ class AddTxnPopUp extends Component {
     var requestOptions = {
       method: "POST",
       headers: myHeaders,
-      redirect: "follow",
     };
     try {
       await fetch(reqUrl, requestOptions);

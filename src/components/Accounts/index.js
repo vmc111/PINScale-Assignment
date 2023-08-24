@@ -31,7 +31,7 @@ const Accounts = () => {
     ) : (
       <div className="container">
         <Sidebar />
-        <div>
+        <div className="txn-container">
           <Navbar>Account</Navbar>
 
           {displayView()}
