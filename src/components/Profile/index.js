@@ -8,6 +8,7 @@ import Sidebar from "../Sidebar";
 import "./index.css";
 import useApiCall from "../UseApiCall";
 import statusOfPage from "../../constants/apistatus";
+import { TailSpin } from "react-loader-spinner";
 
 const Profile = () => {
   const [userDetails, setUserDetails] = useState({});
@@ -171,9 +172,19 @@ const Profile = () => {
     </div>
   );
 
-  const renderLoadingView = () => <div>Loading...</div>;
+  const renderLoadingView = () => (
+    <div className="chart-loader">
+      <TailSpin color="#0b69ff" height="50" width="50" />
+    </div>
+  );
 
-  const renderFailedView = () => <div>Failed...</div>;
+  const renderFailedView = () => (
+    <div>
+      <button type="button" className="btn" onClick={this.tryAgain}>
+        Try Again
+      </button>
+    </div>
+  );
 
   const displayView = () => {
     switch (status) {
@@ -185,12 +196,11 @@ const Profile = () => {
         return renderFailedView();
 
       default:
-        return null;
+        return renderLoadingView();
     }
   };
 
   return userCreds === undefined ? (
-    // <Navigate to="/login" />
     window.location.replace("/login")
   ) : (
     <div className="container">
