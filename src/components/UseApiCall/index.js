@@ -1,20 +1,11 @@
 import { useEffect, useState } from "react";
+import statusOfPage from "../../constants/apistatus";
 
-const statusOfPage = {
-  Initial: "INITIAL",
-  Loading: "LOADING",
-  Success: "SUCCESS",
-  Failed: "FAILED",
-};
 const useApiCall = (props) => {
   const { url, method, body, userId, headers } = props;
-  const [status, setStatus] = useState(statusOfPage.Loading);
+  const [status, setStatus] = useState(statusOfPage.Success);
   const [response, setResponse] = useState(null);
-  const [erroeMsg, setErrorMsg] = useState({ showErrorMsg: false, msg: "" });
-
-  useEffect(() => {
-    apiCall();
-  }, [url]);
+  const [errorMsg, setErrorMsg] = useState({ showErrorMsg: false, msg: "" });
 
   const apiCall = async () => {
     setErrorMsg({ showErrorMsg: false, msg: "" });
@@ -44,7 +35,7 @@ const useApiCall = (props) => {
     }
   };
 
-  return { response, apiCall, status, erroeMsg };
+  return { response, apiCall, status, errorMsg };
 };
 
 export default useApiCall;

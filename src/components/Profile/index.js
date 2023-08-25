@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useFetchUserId from "../FetchUserId";
+import useUserId from "../FetchUserId";
 
 import Navbar from "../Navbar";
 
@@ -7,20 +7,14 @@ import Sidebar from "../Sidebar";
 
 import "./index.css";
 import useApiCall from "../UseApiCall";
-
-const statusOfPage = {
-  Initial: "INITIAL",
-  Loading: "LOADING",
-  Success: "SUCCESS",
-  Failed: "FAILED",
-};
+import statusOfPage from "../../constants/apistatus";
 
 const Profile = () => {
   const [userDetails, setUserDetails] = useState({});
   const [userCreds, setUserCreds] = useState({});
 
-  const userFromHook = useFetchUserId();
-  const { response, status } = useApiCall({
+  const userFromHook = useUserId();
+  const { response, status, apiCall } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/profile",
     method: "GET",
     userId: userFromHook.userId,
@@ -45,7 +39,8 @@ const Profile = () => {
 
   useEffect(() => {
     setUserCreds(userFromHook);
-  }, [userFromHook]);
+    apiCall();
+  }, []);
 
   const SuccessView = () => (
     <div className="profile-card">

@@ -1,9 +1,9 @@
 import Cookies from "js-cookie";
 
-const useFetchUserId = () => {
+const useUserId = () => {
   const newUserCreds = Cookies.get("secret_token");
   const parsedObject = JSON.parse(newUserCreds);
   return parsedObject;
 };
 
-export default useFetchUserId;
+export default useUserId;
