@@ -81,7 +81,7 @@ const TxnList = () => {
       return renderFailedView();
 
     default:
-      return renderLoadingView;
+      return renderLoadingView();
   }
 };
 

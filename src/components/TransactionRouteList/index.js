@@ -138,7 +138,7 @@ const TransactionRouteList = () => {
       return renderFailedView();
 
     default:
-      return renderLoadingView;
+      return renderLoadingView();
   }
 };
 

@@ -3,7 +3,7 @@ import statusOfPage from "../../constants/apistatus";
 
 const useApiCall = (props) => {
   const { url, method, body, userId, headers } = props;
-  const [status, setStatus] = useState(statusOfPage.Success);
+  const [status, setStatus] = useState(statusOfPage.Initial);
   const [response, setResponse] = useState(null);
   const [errorMsg, setErrorMsg] = useState({ showErrorMsg: false, msg: "" });
 
