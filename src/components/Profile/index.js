@@ -1,78 +1,51 @@
 import { useEffect, useState } from "react";
-
-import Cookies from "js-cookie";
+import useFetchUserId from "../FetchUserId";
 
 import Navbar from "../Navbar";
 
 import Sidebar from "../Sidebar";
 
 import "./index.css";
+import useApiCall from "../UseApiCall";
 
 const statusOfPage = {
   Initial: "INITIAL",
-  Loading: " LOADING",
+  Loading: "LOADING",
   Success: "SUCCESS",
   Failed: "FAILED",
 };
 
 const Profile = () => {
-  const [status, setStatus] = useState(statusOfPage.Initial);
   const [userDetails, setUserDetails] = useState({});
   const [userCreds, setUserCreds] = useState({});
 
+  const userFromHook = useFetchUserId();
+  const { response, status } = useApiCall({
+    url: "https://bursting-gelding-24.hasura.app/api/rest/profile",
+    method: "GET",
+    userId: userFromHook.userId,
+  });
+
   useEffect(() => {
-    fetchAccountDetails();
-  }, []);
-
-  const fetchAccountDetails = async () => {
-    setStatus(statusOfPage.Loading);
-    const userCreds = Cookies.get("secret_token");
-
-    const parsedObject = JSON.parse(userCreds);
-    console.log("parsed object", parsedObject);
-
-    setUserCreds(parsedObject);
-
-    const ReqUrl = "https://bursting-gelding-24.hasura.app/api/rest/profile";
-
-    var myHeaders = new Headers();
-    myHeaders.append("content-type", "application/json");
-    myHeaders.append(
-      "x-hasura-admin-secret",
-      "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF"
-    );
-    myHeaders.append("x-hasura-role", "user");
-    myHeaders.append("x-hasura-user-id", `${parsedObject.userId}`);
-
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    try {
-      const response = await fetch(ReqUrl, requestOptions);
-
-      const result = await response.json();
-      console.log("User", result.users);
-
+    if (response !== null) {
       const user = {
-        city: result.users[0].city,
-        country: result.users[0].country,
-        dateOfBirth: result.users[0].date_of_birth,
-        email: result.users[0].email,
-        id: result.users[0].id,
-        name: result.users[0].name,
-        permanentAddress: result.users[0].permanent_address,
-        postalCode: result.users[0].postal_code,
-        presentAddress: result.users[0].present_address,
+        city: response.users[0].city,
+        country: response.users[0].country,
+        dateOfBirth: response.users[0].date_of_birth,
+        email: response.users[0].email,
+        id: response.users[0].id,
+        name: response.users[0].name,
+        permanentAddress: response.users[0].permanent_address,
+        postalCode: response.users[0].postal_code,
+        presentAddress: response.users[0].present_address,
       };
       setUserDetails(user);
-      setStatus(statusOfPage.Success);
-    } catch (error) {
-      setStatus(statusOfPage.Failed);
     }
-  };
+  }, [response]);
+
+  useEffect(() => {
+    setUserCreds(userFromHook);
+  }, [userFromHook]);
 
   const SuccessView = () => (
     <div className="profile-card">
@@ -103,7 +76,6 @@ const Profile = () => {
             id="UserName"
             type="text"
             value={userDetails.name}
-            onChange={() => {}}
           />
         </li>
         <li className="user-bio-li-items">
@@ -116,7 +88,6 @@ const Profile = () => {
             type="email"
             //   placeholder="email"
             value={userDetails.email}
-            onChange={() => {}}
           />
         </li>
         <li className="user-bio-li-items">
@@ -129,7 +100,6 @@ const Profile = () => {
             type="password"
             //   placeholder="**********"
             value="**********"
-            onChange={() => {}}
           />
         </li>
         <li className="user-bio-li-items">
@@ -152,7 +122,6 @@ const Profile = () => {
             type="text"
             placeholder="Present Address"
             value={userDetails.presentAddress}
-            onChange={() => {}}
           />
         </li>
         <li className="user-bio-li-items">
@@ -165,7 +134,6 @@ const Profile = () => {
             type="text"
             placeholder="Permanent Address"
             value={userDetails.permanentAddress}
-            onChange={() => {}}
           />
         </li>
         <li className="user-bio-li-items">
@@ -178,7 +146,6 @@ const Profile = () => {
             type="text"
             placeholder="City"
             value={userDetails.city}
-            onChange={() => {}}
           />
         </li>
         <li className="user-bio-li-items">
@@ -191,7 +158,6 @@ const Profile = () => {
             type="text"
             placeholder="Postal Code"
             value={userDetails.postalCode}
-            onChange={() => {}}
           />
         </li>
         <li className="user-bio-li-items">
@@ -204,7 +170,6 @@ const Profile = () => {
             type="text"
             placeholder="Country"
             value="Country"
-            onChange={() => {}}
           />
         </li>
       </ul>
@@ -230,7 +195,7 @@ const Profile = () => {
   };
 
   return userCreds === undefined ? (
-    //   <Navigate to="/login" />
+    // <Navigate to="/login" />
     window.location.replace("/login")
   ) : (
     <div className="container">

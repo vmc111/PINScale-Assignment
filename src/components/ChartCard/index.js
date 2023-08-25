@@ -29,8 +29,6 @@ class ChartCard extends Component {
   componentDidMount() {
     const userCreds = Cookies.get("secret_token");
 
-    console.log(userCreds);
-
     const parsedObject = JSON.parse(userCreds);
 
     userCreds !== undefined &&
@@ -67,15 +65,11 @@ class ChartCard extends Component {
     try {
       const response = await fetch(ReqUrl, requestOptions);
 
-      console.log(response);
-
       const result = await response.json();
 
       const sevenDaysTxn = result.last_7_days_transactions_credit_debit_totals;
 
       const inRequiredFormat = GetReqFormat(sevenDaysTxn);
-
-      console.log(inRequiredFormat);
 
       this.setState({
         status: statusOfPage.Success,

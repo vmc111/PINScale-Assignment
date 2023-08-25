@@ -33,7 +33,6 @@ const TransactionRouteList = () => {
     const parsedObject = JSON.parse(userCreds);
 
     const { userId, isAdmin } = parsedObject;
-    console.log("userId", userId);
 
     const role = isAdmin ? "admin" : "user";
 
@@ -71,7 +70,6 @@ const TransactionRouteList = () => {
           category: each.category,
         };
       });
-      console.log(txnData);
 
       const sortedData = txnData.sort((a, b) => {
         return new Date(a.date) - new Date(b.date);

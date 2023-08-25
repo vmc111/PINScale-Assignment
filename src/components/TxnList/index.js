@@ -20,8 +20,6 @@ class TxnList extends Component {
   componentDidMount() {
     const userCreds = Cookies.get("secret_token");
 
-    console.log(userCreds);
-
     const parsedObject = JSON.parse(userCreds);
 
     userCreds !== undefined &&
@@ -71,7 +69,6 @@ class TxnList extends Component {
           category: each.category,
         };
       });
-      console.log(txnData);
 
       const sortedData = txnData.sort((a, b) => {
         return new Date(a.date) - new Date(b.date);

@@ -20,8 +20,6 @@ class ProfileBox extends Component {
   SuccessView = () => {
     const userCreds = Cookies.get("secret_token");
 
-    console.log(userCreds);
-
     const parsedObject = JSON.parse(userCreds);
 
     const { username } = parsedObject;

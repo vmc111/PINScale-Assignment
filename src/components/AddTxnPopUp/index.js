@@ -73,8 +73,6 @@ class AddTxnPopUp extends Component {
 
     const { txnName, amount } = txnDetails;
 
-    console.log(typeof amount);
-
     const amountValidation = !isNaN(amount) && amount.trim() !== "";
 
     const txnNameValidation =

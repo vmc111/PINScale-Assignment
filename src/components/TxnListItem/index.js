@@ -16,15 +16,11 @@ const TxnListItem = (props) => {
 
   const userCreds = Cookies.get("secret_token");
 
-  console.log(userCreds);
-
   const parsedObject = JSON.parse(userCreds);
 
   const { isAdmin } = parsedObject;
 
   const admin = !isAdmin;
-
-  console.log("sdas", admin);
 
   const { id, transactionName, type, date, amount, category } = item;
 

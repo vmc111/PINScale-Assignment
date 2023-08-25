@@ -26,8 +26,6 @@ class CreditDebit extends Component {
   componentDidMount() {
     const userCreds = Cookies.get("secret_token");
 
-    console.log(userCreds);
-
     const parsedObject = JSON.parse(userCreds);
 
     userCreds !== undefined &&
