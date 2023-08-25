@@ -2,10 +2,8 @@ import CreditDebit from "../CreditDebit";
 
 import { Navigate } from "react-router-dom";
 
-import Cookies from "js-cookie";
-
 import TransactionsCard from "../TranscationsCard";
-
+import useUserId from "../FetchUserId";
 import ChartCard from "../ChartCard";
 
 import "./index.css";
@@ -21,9 +19,7 @@ const Accounts = () => {
     </div>
   );
 
-  const userCreds = Cookies.get("secret_token");
-
-  const jwtToken = userCreds;
+  const jwtToken = useUserId();
 
   const res =
     jwtToken === undefined ? (

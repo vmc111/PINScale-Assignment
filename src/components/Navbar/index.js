@@ -1,13 +1,11 @@
-import Cookies from "js-cookie";
 import AddTxnPopUp from "../AddTxnPopUp";
 import "./index.css";
+import useUserId from "../FetchUserId";
 
 const Navbar = (props) => {
-  const userCreds = Cookies.get("secret_token");
+  const userCreds = useUserId();
 
-  const parsedObject = JSON.parse(userCreds);
-
-  const { isAdmin } = parsedObject;
+  const { isAdmin } = userCreds;
 
   const admin = !isAdmin;
   return (

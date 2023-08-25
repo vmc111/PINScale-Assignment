@@ -1,7 +1,7 @@
-import { Component } from "react";
-
-import Cookies from "js-cookie";
-
+import { useEffect, useState } from "react";
+import useApiCall from "../UseApiCall";
+import statusOfPage from "../../constants/apistatus";
+import useUserId from "../FetchUserId";
 import { TailSpin } from "react-loader-spinner";
 
 import {
@@ -17,82 +17,37 @@ import "./index.css";
 
 import GetReqFormat from "../RecentTxnsDateConverter";
 
-const statusOfPage = {
-  Loading: " LOADING",
-  Success: "SUCCESS",
-  Failed: "FAILED",
-};
+const ChartCard = () => {
+  const [last7DaysTxns, setLast7] = useState([]);
+  const [userCreds, setUserCreds] = useState(useUserId());
 
-class ChartCard extends Component {
-  state = { Last7DaysTxns: [], status: "LOADING", userCreds: {} };
+  const { response, apiCall, status } = useApiCall({
+    url: "https://bursting-gelding-24.hasura.app/api/rest/daywise-totals-7-days",
+    method: "GET",
+    userId: userCreds.userId,
+  });
 
-  componentDidMount() {
-    const userCreds = Cookies.get("secret_token");
-
-    console.log(userCreds);
-
-    const parsedObject = JSON.parse(userCreds);
-
-    userCreds !== undefined &&
-      this.setState({ userCreds: parsedObject }, this.fetch7DaysData);
-  }
-
-  fetch7DaysData = async () => {
-    this.setState({ status: statusOfPage.Loading });
-
-    const { userCreds } = this.state;
-
-    const { userId, isAdmin } = userCreds;
-
-    const role = isAdmin ? "admin" : "user";
-
-    const ReqUrl =
-      "https://bursting-gelding-24.hasura.app/api/rest/daywise-totals-7-days";
-
-    var myHeaders = new Headers();
-    myHeaders.append("content-type", "application/json");
-    myHeaders.append(
-      "x-hasura-admin-secret",
-      "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF"
-    );
-    myHeaders.append("x-hasura-role", role);
-    myHeaders.append("x-hasura-user-id", `${userId}`);
-
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    try {
-      const response = await fetch(ReqUrl, requestOptions);
-
-      console.log(response);
-
-      const result = await response.json();
-
-      const sevenDaysTxn = result.last_7_days_transactions_credit_debit_totals;
+  useEffect(() => {
+    if (response !== null) {
+      const sevenDaysTxn =
+        response.last_7_days_transactions_credit_debit_totals;
 
       const inRequiredFormat = GetReqFormat(sevenDaysTxn);
-
-      console.log(inRequiredFormat);
-
-      this.setState({
-        status: statusOfPage.Success,
-        Last7DaysTxns: inRequiredFormat,
-      });
-    } catch (error) {
-      this.setState({ status: statusOfPage.Failed });
+      setLast7(inRequiredFormat);
     }
-  };
+  }, [response]);
 
-  loadingView = () => (
+  useEffect(() => {
+    apiCall();
+  }, []);
+
+  const renderLoadingView = () => (
     <div className="chart-loader">
       <TailSpin color="#0b69ff" height="50" width="50" />
     </div>
   );
 
-  successView = () => {
+  const renderSuccessView = () => {
     const DataFormatter = (number) => {
       if (number > 1000) {
         return `${(number / 1000).toString()}k`;
@@ -100,12 +55,10 @@ class ChartCard extends Component {
       return number.toString();
     };
 
-    const { Last7DaysTxns } = this.state;
-
     return (
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
-          data={Last7DaysTxns}
+          data={last7DaysTxns}
           margin={{
             top: 5,
           }}
@@ -151,30 +104,27 @@ class ChartCard extends Component {
     );
   };
 
-  failedView = () => <div>Failed...</div>;
+  const renderFailedView = () => <div>Failed...</div>;
 
-  ChartCardView = () => {
-    const { status } = this.state;
+  const renderChartCardView = () => {
     switch (status) {
       case statusOfPage.Success:
-        return this.successView();
+        return renderSuccessView();
       case statusOfPage.Loading:
-        return this.loadingView();
+        return renderLoadingView();
       case statusOfPage.Failed:
-        return this.failedView();
+        return renderFailedView();
       default:
-        break;
+        return renderLoadingView();
     }
   };
 
-  render() {
-    return (
-      <>
-        <h1>Debit & Credit Overview</h1>
-        {this.ChartCardView()}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <h1>Debit & Credit Overview</h1>
+      {renderChartCardView()}
+    </>
+  );
+};
 
 export default ChartCard;

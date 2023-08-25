@@ -1,28 +1,47 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { TailSpin as Loader } from "react-loader-spinner";
 import "./index.css";
+import useApiCall from "../UseApiCall";
+import statusOfPage from "../../constants/apistatus";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [erroeMsg, setErrorMsg] = useState({ showErrorMsg: false, msg: "" });
-  const [isLoading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [lognFail, setLoginFail] = useState({
+    show: false,
+    msg: "",
+  });
   const navigate = useNavigate();
 
-  const dataFormat = (data) => ({
-    getUserId: data.get_user_id,
+  const { response, status, apiCall, errorMsg } = useApiCall({
+    url: `https://bursting-gelding-24.hasura.app/api/rest/get-user-id`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-hasura-admin-secret":
+        "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
+    },
+    body: { email, password },
   });
+
+  useEffect(() => {
+    if (response !== null) {
+      onLoginApprove(response);
+    }
+  }, [response]);
 
   const handleSelect = (value) => {
     value === "true" ? setIsAdmin(true) : setIsAdmin(false);
   };
 
   const onLoginApprove = (data) => {
-    console.log(data);
-
+    if (data === null || data.get_user_id.length === 0) {
+      setLoginFail({ show: true, msg: "username or password is incorrect" });
+      return null;
+    }
     const Token = isAdmin
       ? "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzY"
       : "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF";
@@ -30,9 +49,11 @@ const Login = () => {
     const userDetails = {
       secretToken: Token,
       username: email,
-      userId: data.getUserId[0].id,
+      userId: data.get_user_id[0].id,
       isAdmin: isAdmin,
     };
+
+    setLoginFail({ show: true, msg: "details" });
 
     Cookies.set("secret_token", JSON.stringify(userDetails), {
       expires: 30,
@@ -40,40 +61,22 @@ const Login = () => {
     navigate("/");
   };
 
-  const loginUser = async (e) => {
+  const loinUserApi = async (e) => {
     e.preventDefault();
-    setErrorMsg({ showErrorMsg: false, msg: "" });
-    setLoading(true);
-    const user = {
-      email,
-      password,
-    };
-    const newUrl = `https://bursting-gelding-24.hasura.app/api/rest/get-user-id`;
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-hasura-admin-secret":
-          "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
-      },
-      body: JSON.stringify(user),
-    };
-    const response = await fetch(newUrl, options);
-    const data = await response.json();
-    if (response.ok) {
-      const formattedData = dataFormat(data);
-      formattedData.getUserId.length !== 0
-        ? onLoginApprove(formattedData)
-        : setErrorMsg({ showErrorMsg: true, msg: "Invalid Login credentials" });
-      onLoginApprove(formattedData);
-    } else {
-      console.log(data.error);
-      setErrorMsg({ showErrorMsg: true, msg: data.error });
+    setLoginFail({ show: false, msg: "" });
+    if (email === "" || password === "") {
+      if (email === "") {
+        setLoginFail({ show: true, msg: "Email Field is Empty" });
+        return;
+      } else {
+        setLoginFail({ show: true, msg: "Password Field is Empty" });
+        return;
+      }
     }
-    setLoading(false);
+    apiCall();
   };
 
-  return (
+  const renderSuccessView = () => (
     <div className="login-container">
       <div className="login-card">
         <img
@@ -86,7 +89,7 @@ const Login = () => {
           alt="website logo"
           src="https://res.cloudinary.com/dqppfjvrw/image/upload/v1690698824/Frame_507_1_oseag1.png"
         />
-        <form onSubmit={(e) => loginUser(e)} className="form-container">
+        <form onSubmit={(e) => loinUserApi(e)} className="form-container">
           <div className="input-container">
             <label htmlFor="username">Email</label>
             <input
@@ -126,14 +129,34 @@ const Login = () => {
           <button className="btn" type="submit">
             Login
           </button>
-          {isLoading ? <Loader color="#3449eb" height={20} /> : null}
-          {erroeMsg.showErrorMsg ? (
-            <p className="error-msg">*{erroeMsg.msg}</p>
+          {errorMsg.showErrorMsg ? (
+            <p className="error-msg">*{errorMsg.msg}</p>
           ) : null}
+          {lognFail.show && <p className="error-msg">*{lognFail.msg}</p>}
         </form>
       </div>
     </div>
   );
+
+  const renderLoadingView = () => (
+    <div className="login-container">
+      <Loader color="#3449eb" height={20} />
+    </div>
+  );
+
+  switch (status) {
+    case statusOfPage.Loading:
+      return renderLoadingView();
+
+    case statusOfPage.Success:
+      return renderSuccessView();
+
+    case statusOfPage.Failed:
+      return renderSuccessView();
+
+    default:
+      return null;
+  }
 };
 
 export default Login;

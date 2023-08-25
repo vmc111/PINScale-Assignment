@@ -1,90 +1,50 @@
-import { Component } from "react";
+import { useEffect, useState } from "react";
 
 import { TailSpin } from "react-loader-spinner";
 
-import Cookies from "js-cookie";
+import useApiCall from "../UseApiCall";
+import useUserId from "../FetchUserId";
 
 import DebitBox from "../DebitBox";
 import CreditBox from "../CreditBox";
+import statusOfPage from "../../constants/apistatus";
 
 import "./index.css";
 
-const creditDebitStatus = {
-  Loading: "LOADING",
-  Succcess: "SUCCESS",
-  Failed: "FAILED",
-};
+const CreditDebit = () => {
+  const [CreditAmountData, setCreditAmountData] = useState([]);
+  const [DebitAmountData, setDebitAmountData] = useState([]);
+  const [userCreds, setUserCreds] = useState(useUserId());
 
-class CreditDebit extends Component {
-  state = {
-    status: "LOADING",
-    CreditAmountData: [],
-    DebitAmountData: [],
-    userCreds: {},
-  };
+  const { response, apiCall, status } = useApiCall({
+    url: "https://bursting-gelding-24.hasura.app/api/rest/credit-debit-totals",
+    method: "GET",
+    userId: userCreds.userId,
+  });
 
-  componentDidMount() {
-    const userCreds = Cookies.get("secret_token");
-
-    console.log(userCreds);
-
-    const parsedObject = JSON.parse(userCreds);
-
-    userCreds !== undefined &&
-      this.setState({ userCreds: parsedObject }, this.fetchCDData);
-  }
-
-  tryAgain = () => {
-    this.fetchCDData();
-  };
-
-  fetchCDData = async () => {
-    this.setState({ status: creditDebitStatus.Loading });
-
-    const { userCreds } = this.state;
-
-    const { userId, isAdmin } = userCreds;
-
-    const role = isAdmin ? "admin" : "user";
-
-    const ReqUrl =
-      "https://bursting-gelding-24.hasura.app/api/rest/credit-debit-totals";
-
-    const options = {
-      method: "GET",
-      headers: {
-        "content-type": "application/json",
-        "x-hasura-admin-secret":
-          "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF",
-        "x-hasura-role": role,
-        "x-hasura-user-id": `${userId}`,
-      },
-    };
-
-    try {
-      const response = await fetch(ReqUrl, options);
-
-      const result = await response.json();
-
-      const data = result.totals_credit_debit_transactions;
+  useEffect(() => {
+    if (response !== null) {
+      const data = response.totals_credit_debit_transactions;
 
       const creditAmount = data.find((each) => each.type === "credit");
       const debitAmount = data.find((each) => each.type === "debit");
 
-      this.setState({
-        status: creditDebitStatus.Succcess,
-        CreditAmountData:
-          creditAmount !== undefined ? creditAmount : { sum: 0 },
-        DebitAmountData: debitAmount !== undefined ? debitAmount : { sum: 0 },
-      });
-    } catch (error) {
-      this.setState({ status: creditDebitStatus.Failed });
+      setCreditAmountData(
+        creditAmount !== undefined ? creditAmount : { sum: 0 }
+      );
+      setDebitAmountData(debitAmount !== undefined ? debitAmount : { sum: 0 });
     }
+  }, [response]);
+
+  useEffect(() => {
+    apiCall();
+  }, []);
+
+  const tryAgain = () => {
+    apiCall();
   };
 
-  successView = () => {
-    const { DebitAmountData, CreditAmountData } = this.state;
-
+  const renderSuccessView = () => {
     return (
       <div className="creditdebit-container">
         <CreditBox Creditdata={CreditAmountData} />
@@ -93,34 +53,33 @@ class CreditDebit extends Component {
     );
   };
 
-  failedView = () => (
+  const renderFailedView = () => (
     <div>
-      <button type="button" className="btn" onClick={this.tryAgain}>
+      <button type="button" className="btn" onClick={tryAgain}>
         Try Again
       </button>
     </div>
   );
 
-  render() {
-    const { status } = this.state;
+  const renderLoadingView = () => (
+    <div className="loader">
+      <TailSpin color="#0b69ff" height="50" width="50" />
+    </div>
+  );
 
-    switch (status) {
-      case creditDebitStatus.Loading:
-        return (
-          <div className="loader">
-            <TailSpin color="#0b69ff" height="50" width="50" />
-          </div>
-        );
-      case creditDebitStatus.Succcess:
-        return this.successView();
+  switch (status) {
+    case statusOfPage.Loading:
+      return renderLoadingView();
 
-      case creditDebitStatus.Failed:
-        return this.failedView();
+    case statusOfPage.Success:
+      return renderSuccessView();
 
-      default:
-        return null;
-    }
+    case statusOfPage.Failed:
+      return renderFailedView();
+
+    default:
+      return renderLoadingView();
   }
-}
+};
 
 export default CreditDebit;

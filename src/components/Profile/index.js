@@ -1,256 +1,216 @@
-import { Component } from "react";
-
-import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
+import useUserId from "../FetchUserId";
 
 import Navbar from "../Navbar";
 
 import Sidebar from "../Sidebar";
 
 import "./index.css";
+import useApiCall from "../UseApiCall";
+import statusOfPage from "../../constants/apistatus";
+import { TailSpin } from "react-loader-spinner";
 
-const statusOfPage = {
-  Loading: " LOADING",
-  Success: "SUCCESS",
-  Failed: "FAILED",
-};
+const Profile = () => {
+  const [userDetails, setUserDetails] = useState({});
+  const [userCreds, setUserCreds] = useState({});
 
-class Profile extends Component {
-  state = { userDetails: {}, status: "LOADING", userCreds: {} };
+  const userFromHook = useUserId();
+  const { response, status, apiCall } = useApiCall({
+    url: "https://bursting-gelding-24.hasura.app/api/rest/profile",
+    method: "GET",
+    userId: userFromHook.userId,
+  });
 
-  componentDidMount() {
-    const userCreds = Cookies.get("secret_token");
-
-    const parsedObject = JSON.parse(userCreds);
-
-    userCreds !== undefined &&
-      this.setState({ userCreds: parsedObject }, this.fetchAccountDetails);
-  }
-
-  fetchAccountDetails = async () => {
-    this.setState({ status: statusOfPage.Loading });
-
-    const { userCreds } = this.state;
-
-    const { userId } = userCreds;
-
-    const ReqUrl = "https://bursting-gelding-24.hasura.app/api/rest/profile";
-
-    var myHeaders = new Headers();
-    myHeaders.append("content-type", "application/json");
-    myHeaders.append(
-      "x-hasura-admin-secret",
-      "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF"
-    );
-    myHeaders.append("x-hasura-role", "user");
-    myHeaders.append("x-hasura-user-id", `${userId}`);
-
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    try {
-      const response = await fetch(ReqUrl, requestOptions);
-
-      const result = await response.json();
-      console.log("User", result.users);
-
+  useEffect(() => {
+    if (response !== null) {
       const user = {
-        city: result.users[0].city,
-        country: result.users[0].country,
-        dateOfBirth: result.users[0].date_of_birth,
-        email: result.users[0].email,
-        id: result.users[0].id,
-        name: result.users[0].name,
-        permanentAddress: result.users[0].permanent_address,
-        postalCode: result.users[0].postal_code,
-        presentAddress: result.users[0].present_address,
+        city: response.users[0].city,
+        country: response.users[0].country,
+        dateOfBirth: response.users[0].date_of_birth,
+        email: response.users[0].email,
+        id: response.users[0].id,
+        name: response.users[0].name,
+        permanentAddress: response.users[0].permanent_address,
+        postalCode: response.users[0].postal_code,
+        presentAddress: response.users[0].present_address,
       };
-
-      this.setState({ userDetails: user, status: statusOfPage.Success });
-    } catch (error) {
-      this.setState({ status: statusOfPage.Failed });
+      setUserDetails(user);
     }
-  };
+  }, [response]);
 
-  SuccessView = () => {
-    const { userDetails } = this.state;
+  useEffect(() => {
+    setUserCreds(userFromHook);
+    apiCall();
+  }, []);
 
-    return (
-      <div className="profile-card">
-        <img
-          src="https://p.kindpng.com/picc/s/24-248325_profile-picture-circle-png-transparent-png.png"
-          alt="profile"
-          className="profile-image"
-        />
+  const renderSuccessView = () => (
+    <div className="profile-card">
+      <img
+        src="https://p.kindpng.com/picc/s/24-248325_profile-picture-circle-png-transparent-png.png"
+        alt="profile"
+        className="profile-image"
+      />
 
-        <ul className="bio-container">
-          <li className="user-bio-li-items">
-            <label htmlFor="name" className="bio-labels">
-              Your Name
-            </label>
-            <input
-              value={userDetails.name}
-              className="input-element"
-              id="name"
-              type="text"
-            />
-          </li>
-          <li className="user-bio-li-items">
-            <label htmlFor="UserName" className="bio-labels">
-              User Name
-            </label>
-            <input
-              className="input-element"
-              id="UserName"
-              type="text"
-              //   placeholder="user name"
-              value={userDetails.name}
-              onChange={() => {}}
-            />
-          </li>
-          <li className="user-bio-li-items">
-            <label htmlFor="Email" className="bio-labels">
-              Email
-            </label>
-            <input
-              className="input-element"
-              id="Email"
-              type="email"
-              //   placeholder="email"
-              value={userDetails.email}
-              onChange={() => {}}
-            />
-          </li>
-          <li className="user-bio-li-items">
-            <label htmlFor="password" className="bio-labels">
-              Password
-            </label>
-            <input
-              className="input-element"
-              id="password"
-              type="password"
-              //   placeholder="**********"
-              value="**********"
-              onChange={() => {}}
-            />
-          </li>
-          <li className="user-bio-li-items">
-            <label htmlFor="DOB" className="bio-labels">
-              Date of Birth
-            </label>
-            <select className="input-element" id="DOB" name="dob">
-              <option className="option-el" value="Dob">
-                {userDetails.dateOfBirth}
-              </option>
-            </select>
-          </li>
-          <li className="user-bio-li-items">
-            <label htmlFor="presentAddress" className="bio-labels">
-              Present Address
-            </label>
-            <input
-              className="input-element"
-              id="presentAddress"
-              type="text"
-              placeholder="Present Address"
-              value={userDetails.presentAddress}
-              onChange={() => {}}
-            />
-          </li>
-          <li className="user-bio-li-items">
-            <label htmlFor="permanentAddress" className="bio-labels">
-              Permanent Address
-            </label>
-            <input
-              className="input-element"
-              id="permanentAddress"
-              type="text"
-              placeholder="Permanent Address"
-              value={userDetails.permanentAddress}
-              onChange={() => {}}
-            />
-          </li>
-          <li className="user-bio-li-items">
-            <label htmlFor="city" className="bio-labels">
-              City
-            </label>
-            <input
-              className="input-element"
-              id="city"
-              type="text"
-              placeholder="City"
-              value={userDetails.city}
-              onChange={() => {}}
-            />
-          </li>
-          <li className="user-bio-li-items">
-            <label htmlFor="postalCode" className="bio-labels">
-              Postal Code
-            </label>
-            <input
-              className="input-element"
-              id="postal Code"
-              type="text"
-              placeholder="Postal Code"
-              value={userDetails.postalCode}
-              onChange={() => {}}
-            />
-          </li>
-          <li className="user-bio-li-items">
-            <label htmlFor="country" className="bio-labels">
-              Country
-            </label>
-            <input
-              className="input-element"
-              id="country"
-              type="text"
-              placeholder="Country"
-              value="Country"
-              onChange={() => {}}
-            />
-          </li>
-        </ul>
-      </div>
-    );
-  };
+      <ul className="bio-container">
+        <li className="user-bio-li-items">
+          <label htmlFor="name" className="bio-labels">
+            Your Name
+          </label>
+          <input
+            value={userDetails.name}
+            className="input-element"
+            id="name"
+            type="text"
+          />
+        </li>
+        <li className="user-bio-li-items">
+          <label htmlFor="UserName" className="bio-labels">
+            User Name
+          </label>
+          <input
+            className="input-element"
+            id="UserName"
+            type="text"
+            value={userDetails.name}
+          />
+        </li>
+        <li className="user-bio-li-items">
+          <label htmlFor="Email" className="bio-labels">
+            Email
+          </label>
+          <input
+            className="input-element"
+            id="Email"
+            type="email"
+            //   placeholder="email"
+            value={userDetails.email}
+          />
+        </li>
+        <li className="user-bio-li-items">
+          <label htmlFor="password" className="bio-labels">
+            Password
+          </label>
+          <input
+            className="input-element"
+            id="password"
+            type="password"
+            //   placeholder="**********"
+            value="**********"
+          />
+        </li>
+        <li className="user-bio-li-items">
+          <label htmlFor="DOB" className="bio-labels">
+            Date of Birth
+          </label>
+          <select className="input-element" id="DOB" name="dob">
+            <option className="option-el" value="Dob">
+              {userDetails.dateOfBirth}
+            </option>
+          </select>
+        </li>
+        <li className="user-bio-li-items">
+          <label htmlFor="presentAddress" className="bio-labels">
+            Present Address
+          </label>
+          <input
+            className="input-element"
+            id="presentAddress"
+            type="text"
+            placeholder="Present Address"
+            value={userDetails.presentAddress}
+          />
+        </li>
+        <li className="user-bio-li-items">
+          <label htmlFor="permanentAddress" className="bio-labels">
+            Permanent Address
+          </label>
+          <input
+            className="input-element"
+            id="permanentAddress"
+            type="text"
+            placeholder="Permanent Address"
+            value={userDetails.permanentAddress}
+          />
+        </li>
+        <li className="user-bio-li-items">
+          <label htmlFor="city" className="bio-labels">
+            City
+          </label>
+          <input
+            className="input-element"
+            id="city"
+            type="text"
+            placeholder="City"
+            value={userDetails.city}
+          />
+        </li>
+        <li className="user-bio-li-items">
+          <label htmlFor="postalCode" className="bio-labels">
+            Postal Code
+          </label>
+          <input
+            className="input-element"
+            id="postal Code"
+            type="text"
+            placeholder="Postal Code"
+            value={userDetails.postalCode}
+          />
+        </li>
+        <li className="user-bio-li-items">
+          <label htmlFor="country" className="bio-labels">
+            Country
+          </label>
+          <input
+            className="input-element"
+            id="country"
+            type="text"
+            placeholder="Country"
+            value="Country"
+          />
+        </li>
+      </ul>
+    </div>
+  );
 
-  loadingView = () => <div>Loading...</div>;
+  const renderLoadingView = () => (
+    <div className="chart-loader">
+      <TailSpin color="#0b69ff" height="50" width="50" />
+    </div>
+  );
 
-  failedView = () => <div>Failed...</div>;
+  const renderFailedView = () => (
+    <div>
+      <button type="button" className="btn" onClick={this.tryAgain}>
+        Try Again
+      </button>
+    </div>
+  );
 
-  displayView = () => {
-    const { status } = this.state;
+  const displayView = () => {
     switch (status) {
       case statusOfPage.Success:
-        return this.SuccessView();
+        return renderSuccessView();
       case statusOfPage.Loading:
-        return this.loadingView();
+        return renderLoadingView();
       case statusOfPage.Failed:
-        return this.failedView();
+        return renderFailedView();
 
       default:
-        return null;
+        return renderLoadingView();
     }
   };
 
-  render() {
-    const userCreds = Cookies.get("secret_token");
-
-    return userCreds === undefined ? (
-      //   <Navigate to="/login" />
-      window.location.replace("/login")
-    ) : (
-      <div className="container">
-        <Sidebar />
-        <div className="txn-container">
-          <Navbar>Profile</Navbar>
-          <div className="profile-container">{this.displayView()}</div>
-        </div>
+  return userCreds === undefined ? (
+    window.location.replace("/login")
+  ) : (
+    <div className="container">
+      <Sidebar />
+      <div className="txn-container">
+        <Navbar>Profile</Navbar>
+        <div className="profile-container">{displayView()}</div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default Profile;

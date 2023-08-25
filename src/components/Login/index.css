@@ -31,9 +31,10 @@
     justify-content: space-evenly;
     align-items: center;
 
-    min-height: 200px;
+    height: auto;
     /* color: white; */
     font-family: "roboto";
+    flex-wrap: wrap;
 }
 
 .input-container {
@@ -71,10 +72,8 @@
 }
 
 .error-msg {
-    margin-top: 10px;
-    text-align: center;
     color: red;
-    width: 250px;
+    font-size: 16px;
 }
 
 .mobile-logo {
