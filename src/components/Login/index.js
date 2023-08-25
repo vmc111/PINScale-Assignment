@@ -76,7 +76,7 @@ const Login = () => {
     apiCall();
   };
 
-  const successView = () => (
+  const renderSuccessView = () => (
     <div className="login-container">
       <div className="login-card">
         <img
@@ -138,7 +138,7 @@ const Login = () => {
     </div>
   );
 
-  const loadingView = () => (
+  const renderLoadingView = () => (
     <div className="login-container">
       <Loader color="#3449eb" height={20} />
     </div>
@@ -146,13 +146,13 @@ const Login = () => {
 
   switch (status) {
     case statusOfPage.Loading:
-      return loadingView();
+      return renderLoadingView();
 
     case statusOfPage.Success:
-      return successView();
+      return renderSuccessView();
 
     case statusOfPage.Failed:
-      return successView();
+      return renderSuccessView();
 
     default:
       return null;

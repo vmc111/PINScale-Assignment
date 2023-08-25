@@ -1,65 +1,33 @@
 import { useEffect, useState } from "react";
 
 import { TailSpin } from "react-loader-spinner";
-
-import Cookies from "js-cookie";
+import useApiCall from "../UseApiCall";
 
 import TransactionsRouteListItems from "../TransactionsRouteListItems";
+import statusOfPage from "../../constants/apistatus";
 
 import "./index.css";
-
-const statusOfPage = {
-  initial: "INTIAL",
-  Loading: "LOADING",
-  Succcess: "SUCCESS",
-  Failed: "FAILED",
-};
+import useUserId from "../FetchUserId";
 
 const TransactionRouteList = () => {
-  const [status, setStatus] = useState(statusOfPage.initial); // to update the page's status
   const [allTxnsList, setAllTxnsList] = useState([]);
   const [filteredlist, setFilteredList] = useState([]);
   const [activeBtn, setActiveBtn] = useState("");
+  const userCreds = useUserId();
+
+  const { response, apiCall, status } = useApiCall({
+    url: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=1000&offset=1",
+    method: "GET",
+    userId: userCreds.userId,
+  });
 
   useEffect(() => {
-    fetchTxnDetails();
+    apiCall();
   }, []);
 
-  const fetchTxnDetails = async () => {
-    setStatus(statusOfPage.Loading);
-
-    const userCreds = Cookies.get("secret_token");
-
-    const parsedObject = JSON.parse(userCreds);
-
-    const { userId, isAdmin } = parsedObject;
-
-    const role = isAdmin ? "admin" : "user";
-
-    const ReqUrl =
-      "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=1000&offset=1";
-
-    var myHeaders = new Headers();
-    myHeaders.append("content-type", "application/json");
-    myHeaders.append(
-      "x-hasura-admin-secret",
-      "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF"
-    );
-    myHeaders.append("x-hasura-role", role);
-    myHeaders.append("x-hasura-user-id", userId);
-
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    try {
-      const response = await fetch(ReqUrl, requestOptions);
-
-      const result = await response.json();
-
-      const txnData = result.transactions.map((each) => {
+  useEffect(() => {
+    if (response !== null) {
+      const txnData = response.transactions.map((each) => {
         return {
           amount: each.amount,
           id: each.id,
@@ -78,12 +46,9 @@ const TransactionRouteList = () => {
       const ListOfTxns = sortedData.reverse();
       setAllTxnsList(ListOfTxns);
       setFilteredList(ListOfTxns);
-      setStatus(statusOfPage.Succcess);
       setActiveBtn("AllTxn");
-    } catch (error) {
-      setStatus(statusOfPage.Failed);
     }
-  };
+  }, [response]);
 
   const onClickCredit = () => {
     const filteredData = allTxnsList.filter((each) => each.type === "credit");
@@ -102,7 +67,7 @@ const TransactionRouteList = () => {
     setActiveBtn("AllTxn");
   };
 
-  const successView = () => {
+  const renderSuccessView = () => {
     const isAllTxnActive =
       "AllTxn" === activeBtn ? "txn-btn active-txn-btn" : "txn-btn";
     const isCreditActive =
@@ -148,7 +113,7 @@ const TransactionRouteList = () => {
     );
   };
 
-  const loadingView = () => (
+  const renderLoadingView = () => (
     <div className="loader">
       <TailSpin color="#0b69ff" height="50" width="50" />
     </div>
@@ -156,7 +121,7 @@ const TransactionRouteList = () => {
 
   const tryAgain = () => {};
 
-  const failedView = () => (
+  const renderFailedView = () => (
     <div>
       <button type="button" className="btn" onClick={tryAgain}>
         Try Again
@@ -166,14 +131,14 @@ const TransactionRouteList = () => {
 
   switch (status) {
     case statusOfPage.Loading:
-      return loadingView();
-    case statusOfPage.Succcess:
-      return successView();
+      return renderLoadingView();
+    case statusOfPage.Success:
+      return renderSuccessView();
     case statusOfPage.Failed:
-      return failedView();
+      return renderFailedView();
 
     default:
-      return null;
+      return renderLoadingView;
   }
 };
 

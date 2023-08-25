@@ -42,7 +42,7 @@ const Profile = () => {
     apiCall();
   }, []);
 
-  const SuccessView = () => (
+  const renderSuccessView = () => (
     <div className="profile-card">
       <img
         src="https://p.kindpng.com/picc/s/24-248325_profile-picture-circle-png-transparent-png.png"
@@ -171,18 +171,18 @@ const Profile = () => {
     </div>
   );
 
-  const loadingView = () => <div>Loading...</div>;
+  const renderLoadingView = () => <div>Loading...</div>;
 
-  const failedView = () => <div>Failed...</div>;
+  const renderFailedView = () => <div>Failed...</div>;
 
   const displayView = () => {
     switch (status) {
       case statusOfPage.Success:
-        return SuccessView();
+        return renderSuccessView();
       case statusOfPage.Loading:
-        return loadingView();
+        return renderLoadingView();
       case statusOfPage.Failed:
-        return failedView();
+        return renderFailedView();
 
       default:
         return null;

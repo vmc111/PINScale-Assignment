@@ -1,13 +1,11 @@
 import TransactionRouteList from "../TransactionRouteList";
-import Cookies from "js-cookie";
+import useUserId from "../FetchUserId";
 import { Navigate } from "react-router-dom";
 import Sidebar from "../Sidebar";
 import Navbar from "../Navbar";
 
 const TransactionRoute = () => {
-  const userCreds = Cookies.get("secret_token");
-
-  return userCreds !== undefined ? (
+  return useUserId() !== undefined ? (
     <div className="container">
       <Sidebar />
       <div className="txn-container">
