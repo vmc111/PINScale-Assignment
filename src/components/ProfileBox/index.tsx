@@ -14,7 +14,7 @@ const ProfileBox = () => {
       />
       <div className="user-info">
         <h1 className="user-text">USER</h1>
-        <p>{typeof user === "string" ? "" : user.username}</p>
+        <p>{typeof user === "string" ? "" : user!.username}</p>
       </div>   
     </div><LogoutBtn /></div>
   );

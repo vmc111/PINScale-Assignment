@@ -21,10 +21,10 @@ const Accounts = () => {
     </div>
   );
 
-  const jwtToken: string | Details = useUserId();
+  const jwtToken: Details = useUserId();
 
   const res =
-    jwtToken === "" ? (
+    jwtToken === undefined ? (
       <Navigate to="/login" />
     ) : (
       <div className="container">

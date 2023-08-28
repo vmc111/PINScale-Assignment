@@ -11,7 +11,7 @@ import statusOfPage from "../../constants/apistatus";
 import { TailSpin } from "react-loader-spinner";
 import { Navigate } from "react-router";
 
-type DataArray = {
+type UserData = {
   date_of_birth: string,
   email: string,
   id: number,
@@ -24,17 +24,17 @@ type DataArray = {
 }
 
 type Data = {
-  users: DataArray[]
+  users: UserData[]
 }
 
 const Profile = (): JSX.Element => {
-  const [userDetails, setUserDetails] = useState<DataArray>()
+  const [userDetails, setUserDetails] = useState<UserData>()
 
   const userFromHook = useUserId();
   const { response, status, apiCall } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/profile",
     method: "GET",
-    userId:typeof userFromHook === "string"? 0 : userFromHook.userId,
+    userId:userFromHook!.userId,
   });
 
   useEffect(() => {
@@ -216,7 +216,7 @@ const Profile = (): JSX.Element => {
     }
   };
 
-  return userFromHook === "" ? (
+  return userFromHook === undefined ? (
     <Navigate to={"/login"} />
   ) : (
     <div className="container">

@@ -1,15 +1,8 @@
 import Cookies from "js-cookie";
 import Details from "../../constants/detailstype";
-const useUserId = () : string | {
-    secretToken: string;
-    username: string | undefined;
-    userId: number | undefined;
-    isAdmin: boolean;
-} => {
+const useUserId = () : Details => {
   const newUserCreds = Cookies.get("secret_token");
-  const parsedObject : Details | string =
-    newUserCreds === undefined ? "" : JSON.parse(newUserCreds);
-  return parsedObject;
+  return (newUserCreds === undefined? undefined : JSON.parse(newUserCreds))
 };
 
 export default useUserId;

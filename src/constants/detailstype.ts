@@ -5,6 +5,6 @@ type Details =
     username: string | undefined;
     userId: number | undefined;
     isAdmin: boolean;
-}
+} | undefined
 
 export default Details

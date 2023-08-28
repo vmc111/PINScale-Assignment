@@ -9,19 +9,19 @@ import TransactionsRouteListItems from "../TransactionsRouteListItems";
 import "./index.css";
 import statusOfPage from "../../constants/apistatus";
 
-type TransactionsArray = { amount: number; id: number; transactionName: string; userId: number; date: string; type: string; category: string; }[]
+type TransactionsObj = { amount: number; id: number; transactionName: string; userId: number; date: string; type: string; category: string; }
 type Transactions = {
-  transactions : TransactionsArray
+  transactions : TransactionsObj[]
 }
 
 
 const TxnList = () => {
-  const [listOfTransactions, setListOfTransactions] = useState<TransactionsArray>();
+  const [listOfTransactions, setListOfTransactions] = useState<TransactionsObj[]>();
   const [userCreds, setUserCreds] = useState(useUserId());
   const { response, apiCall, status } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0",
     method: "GET",
-    userId:typeof userCreds === "string"? 0 : userCreds.userId,
+    userId:userCreds!.userId,
   });
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const TxnList = () => {
           amount: each.amount,
           id: each.id,
           transactionName: each.transactionName,
-          userId: each.id,
+          userId: each.userId,
           date: each.date,
           type: each.type,
           category: each.category,

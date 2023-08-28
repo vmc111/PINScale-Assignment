@@ -5,7 +5,7 @@ import Sidebar from "../Sidebar";
 import Navbar from "../Navbar";
 
 const TransactionRoute = () => {
-  return useUserId() !== "" ? (
+  return useUserId() !== undefined ? (
     <div className="container">
       <Sidebar />
       <div className="txn-container">

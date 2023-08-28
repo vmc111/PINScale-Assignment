@@ -8,11 +8,9 @@ import useUserId from "../FetchUserId";
 
 import "./index.css";
 import DeletePopup from "../DeletePopUp";
-import DateConverter from "../DateConverer";
+import DateConverter from "../../utils/dateConverter";
 
-type Props = {
-  key: number,
-  item: {
+type Item = {
     amount: number;
     id: number;
     transactionName: string;
@@ -21,6 +19,10 @@ type Props = {
     type: string;
     category: string;
 }
+
+type Props = {
+  key: number,
+  item: Item
 }
 
 const TransactionsRouteListItems = (props: Props) => {
@@ -43,7 +45,7 @@ const TransactionsRouteListItems = (props: Props) => {
 
   const userCreds = useUserId();
 
-  const admin  =typeof userCreds === "string"? false: userCreds.isAdmin;
+  const admin = userCreds!.isAdmin;
  
 
   return (

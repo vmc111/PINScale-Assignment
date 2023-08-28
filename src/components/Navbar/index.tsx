@@ -2,11 +2,15 @@ import AddTxnPopUp from "../AddTxnPopUp";
 import "./index.css";
 import useUserId from "../FetchUserId";
 
-const Navbar = (props: {title: string}) => {
+type Title = {
+  title: string;
+}
+
+const Navbar = (props: Title) => {
   const userCreds = useUserId();
   const {title} = props
 
-  const  admin  =typeof userCreds === "string"? false: userCreds.isAdmin;
+  const  admin = userCreds!.isAdmin;
   return (
     <nav className="nav-container">
       <h1>{title}</h1>

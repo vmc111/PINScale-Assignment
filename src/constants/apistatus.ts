@@ -1,3 +1,4 @@
+
 const statusOfPage = {
   Initial: "INITIAL",
   Loading: "LOADING",

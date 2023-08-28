@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import useApiCall from "../UseApiCall/";
+import useApiCall from "../UseApiCall";
 import statusOfPage from "../../constants/apistatus";
-import useUserId from "../FetchUserId/";
+import useUserId from "../FetchUserId";
 import { TailSpin } from "react-loader-spinner";
 
 import {
@@ -15,34 +15,30 @@ import {
 
 import "./index.css";
 
-import GetReqFormat from "../RecentTxnsDateConverter/";
+import GetReqFormat from "../RecentTxnsDateConverter";
+import Details from "../../constants/detailstype";
 
-type User = string | {
-    secretToken: string;
-    username: string | undefined;
-    userId: number | undefined;
-    isAdmin: boolean;
-}
-
-type DataArray = {
+type DataObj = {
   date: Date,
   sum: number,
   type: string
 }
 
+type FinalDataObj = { day: string; debit: number; credit: number; }
+
 type Data = {
-  last_7_days_transactions_credit_debit_totals: DataArray []
+  last_7_days_transactions_credit_debit_totals: DataObj []
 }
- type FinalData = { day: string; debit: number; credit: number; }[]
+ type FinalData = FinalDataObj []
 
 const ChartCard = () => {
   const [last7DaysTxns, setLast7] = useState<FinalData| null >(null);
-  const [userCreds, setUserCreds] = useState<User>(useUserId());
+  const [userCreds, setUserCreds] = useState<Details>(useUserId());
 
   const { response, apiCall, status } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/daywise-totals-7-days",
     method: "GET",
-    userId: typeof userCreds === "string"? 0 : userCreds.userId,
+    userId:userCreds!.userId,
   });
 
   useEffect(() => {

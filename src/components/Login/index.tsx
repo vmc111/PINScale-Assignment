@@ -8,25 +8,25 @@ import useApiCall from "../UseApiCall/index";
 import React from "react";
 import useUserId from "../FetchUserId";
 
-type Error = {
+type LoginError = {
   msg: string,
   show: boolean
 }
 
-type DataArray = {
+type UserId = {
   id: number | undefined
 }
 
 
 type Data = {
-  get_user_id : DataArray[],
+  get_user_id : UserId[],
 }
 
 const Login = () => {
   const [email, setEmail] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [lognFail, setLoginFail] = useState<Error>({
+  const [lognFail, setLoginFail] = useState<LoginError>({
     show: false,
     msg: "",
   });
@@ -52,8 +52,7 @@ const Login = () => {
 
     const userLogged = useUserId()
 
-    if (userLogged !== ""){
-      navigate("/")
+    if (userLogged !== undefined){
       return <Navigate to="/" />
     }
 

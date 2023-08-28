@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 
 import { TailSpin } from "react-loader-spinner";
-import useApiCall from "../UseApiCall/";
+import useApiCall from "../UseApiCall";
 
-import TransactionsRouteListItems from "../TransactionsRouteListItems/";
+import TransactionsRouteListItems from "../TransactionsRouteListItems";
 import statusOfPage from "../../constants/apistatus";
 
 import "./index.css";
-import useUserId from "../FetchUserId/";
-type DataObj = {
+import useUserId from "../FetchUserId";
+
+type FinalDataObj = {
     amount: number,
     id: number,
     transactionName: string,
@@ -16,10 +17,9 @@ type DataObj = {
     date: string,
     type: string,
     category: string,
-  }[]
+  }
 
-type Data = {
-  transactions: {
+  type InitialDataObj = {
     amount: number,
     id: number,
     transaction_name: string,
@@ -27,19 +27,25 @@ type Data = {
     date: string,
     type: string,
     category: string,
-  }[]
+  }
+
+
+type FinalDataArray = FinalDataObj[]
+
+type Data = {
+  transactions: InitialDataObj[]
 }
 
 const TransactionRouteList = () => {
-  const [allTxnsList, setAllTxnsList] = useState<DataObj>();
-  const [filteredlist, setFilteredList] = useState<DataObj>([]);
+  const [allTxnsList, setAllTxnsList] = useState<FinalDataArray>();
+  const [filteredlist, setFilteredList] = useState<FinalDataArray>([]);
   const [activeBtn, setActiveBtn] = useState("");
   const userCreds = useUserId();
 
   const { response, apiCall, status } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=1000&offset=1",
     method: "GET",
-    userId: typeof userCreds === "string"? 0 : userCreds.userId,
+    userId: userCreds!.userId,
   });
 
   useEffect(() => {

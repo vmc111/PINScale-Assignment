@@ -2,17 +2,19 @@ import { useEffect, useState } from "react";
 
 import { TailSpin } from "react-loader-spinner";
 
-import useApiCall from "../UseApiCall/";
-import useUserId from "../FetchUserId/";
+import useApiCall from "../UseApiCall";
+import useUserId from "../FetchUserId";
 
-import DebitBox from "../DebitBox/";
-import CreditBox from "../CreditBox/";
+import DebitBox from "../DebitBox";
+import CreditBox from "../CreditBox";
 import statusOfPage from "../../constants/apistatus";
 
 import "./index.css";
 
+type AmountObj = {type: string, sum: number}
+
 type Data = {
- totals_credit_debit_transactions: {type: string, sum: number}[] 
+ totals_credit_debit_transactions: AmountObj[] 
 }
 
 type Amount = { sum: number }
@@ -25,7 +27,7 @@ const CreditDebit = () => {
   const { response, apiCall, status } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/credit-debit-totals",
     method: "GET",
-    userId: typeof userCreds === "string"? 0 : userCreds.userId,
+    userId:userCreds!.userId,
   });
 
   useEffect(() => {
@@ -54,8 +56,8 @@ const CreditDebit = () => {
   const renderSuccessView = () => {
     return (
       <div className="creditdebit-container">
-        <CreditBox Creditdata={CreditAmountData} />
-        <DebitBox Debitdata={DebitAmountData} />
+        <CreditBox creditData={CreditAmountData} />
+        <DebitBox debitData={DebitAmountData} />
       </div>
     );
   };

@@ -24,7 +24,7 @@ const TxnDetails = {
 const  AddTxnPopUp = () =>  {
   const [txnDetails, setTxnDetails] = useState(TxnDetails)
   const userCreds = useUserId()
-  const userId = typeof userCreds === "string"? 0 : userCreds.userId
+  const userId = userCreds!.userId
   const apiBody = {
     name: txnDetails.txnName,
     type: txnDetails.txnType,
