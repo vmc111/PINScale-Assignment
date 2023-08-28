@@ -5,12 +5,11 @@ import Sidebar from "../Sidebar";
 import Navbar from "../Navbar";
 
 const TransactionRoute = () => {
-  return useUserId() !== undefined ? (
+  return useUserId() !== "" ? (
     <div className="container">
       <Sidebar />
       <div className="txn-container">
-        <Navbar>Transactions</Navbar>
-
+        <Navbar title="Transactions" />
         <TransactionRouteList />
       </div>
     </div>

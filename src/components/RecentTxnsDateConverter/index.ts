@@ -1,6 +1,23 @@
 const WeekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const GetReqFormat = (sevenDaysTxns) => {
+type DataArray = {
+  date: Date,
+  sum: number,
+  type: string
+}
+
+type Data = {
+  last_7_days_transactions_credit_debit_totals: DataArray []
+}
+
+type Days = {
+    day: string;
+    debit: number;
+    credit: number;
+}[]
+
+
+const GetReqFormat = (sevenDaysTxns: Data) => {
   const day0 = new Date();
   const day1 = new Date();
   day1.setDate(new Date().getDate() - 1);
@@ -15,7 +32,7 @@ const GetReqFormat = (sevenDaysTxns) => {
   const day6 = new Date();
   day6.setDate(new Date().getDate() - 6);
 
-  let sevenWeeksData = [
+  let sevenWeeksData: Days = [
     { day: WeekDays[day6.getDay()], debit: 0, credit: 0 },
     { day: WeekDays[day5.getDay()], debit: 0, credit: 0 },
     { day: WeekDays[day4.getDay()], debit: 0, credit: 0 },
@@ -25,25 +42,23 @@ const GetReqFormat = (sevenDaysTxns) => {
     { day: WeekDays[day0.getDay()], debit: 0, credit: 0 },
   ];
 
-  const GivenData = sevenDaysTxns;
 
-  for (let item of GivenData) {
-    const { date, sum, type } = item;
+ const GivenData = sevenDaysTxns.last_7_days_transactions_credit_debit_totals
 
-    const dateOfTxn = new Date(date);
-
-    const dayOfTxn = WeekDays[dateOfTxn.getDay()];
-
-    const modified = sevenWeeksData.map((each) => {
-      if (dayOfTxn === each.day) {
-        each[type] += sum;
-
-        return each;
-      }
-      return each;
-    });
-    sevenWeeksData = modified;
-  }
+for (let item of GivenData){
+  const dateOfTxn = new Date(item.date);
+ const dayOfTxn = WeekDays[dateOfTxn.getDay()];
+  const modified = sevenWeeksData.map((eachData) => {
+    if (eachData.day === dayOfTxn) {
+        if (item.type === "credit"){
+          eachData["credit"] += item.sum} else{
+            eachData["debit"] += item.sum
+        }
+    }
+    return eachData
+  })
+  sevenWeeksData = modified
+}
   return sevenWeeksData;
 };
 

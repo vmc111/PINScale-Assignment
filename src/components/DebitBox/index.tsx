@@ -2,17 +2,16 @@ import { BsCurrencyDollar } from "react-icons/bs";
 
 import "./index.css";
 
-const DebitBox = (props) => {
-  const { Debitdata } = props;
+type Props = {
+  Debitdata : {sum: number}
+}
 
-  const { sum } = Debitdata;
-
-  return (
+const DebitBox = (props: Props) => (
     <div className="debit-container">
       <div>
         <h1 className="debit-amount-text">
           <BsCurrencyDollar />
-          {sum}
+          {props.Debitdata.sum}
         </h1>
         <p className="debit-text">Debit</p>
       </div>
@@ -23,6 +22,5 @@ const DebitBox = (props) => {
       />
     </div>
   );
-};
 
 export default DebitBox;

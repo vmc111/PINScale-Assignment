@@ -13,7 +13,7 @@ const Months = [
   "Dec",
 ];
 
-const DateConverter = (dategiven) => {
+const DateConverter = (dategiven: string) => {
   const d = new Date(dategiven);
 
   const date = d.getDate();
