@@ -1,5 +1,6 @@
 import { useState } from "react";
-import statusOfPage from "../../constants/apistatus";
+// import Status from "../../constants/apistatus";
+import Status from "../../constants/apistatus";
 
 type Headers = {
     "Content-Type": string;
@@ -13,10 +14,7 @@ type Error = {
    showErrorMsg: boolean
 }
 
-type Props = {
-  url: string,
-  method: string,
-  body?: {
+type APIBody = {
    email?: string | undefined,
    password?: string | undefined,
    name?: string,
@@ -25,19 +23,24 @@ type Props = {
     amount?: number,
     date?: Date,
     user_id?: number 
-},
+}
+
+type Props = {
+  url: string,
+  method: "GET" | "PUT" | "POST" | "DELETE",
+  body?: APIBody,
   userId?: number,
   headers?: Headers 
 }
 
 const useApiCall = (props: Props) => {
   const { url, method, body, userId, headers } = props;
-  const [status, setStatus] = useState<string>(statusOfPage.Initial);
+  const [status, setStatus] = useState<Status>("INITIAL");
   const [response, setResponse] = useState(null);
   const [errorMsg, setErrorMsg] = useState<Error>({ showErrorMsg: false, msg: "" });
 
   const apiCall = async () => {
-    setStatus(statusOfPage.Loading);
+    setStatus("LOADING");
     setErrorMsg({ showErrorMsg: false, msg: "" });
     var myHeaders = new Headers();
     myHeaders.append("content-type", "application/json");
@@ -58,9 +61,9 @@ const useApiCall = (props: Props) => {
     const data = await res.json();
     if (res.ok) {
       setResponse(data);
-      setStatus(statusOfPage.Success);
+      setStatus("SUCCESS");
     } else {
-      setStatus(statusOfPage.Failed);
+      setStatus("FAILED");
       setErrorMsg({ showErrorMsg: true, msg: data.error });
     }
   };

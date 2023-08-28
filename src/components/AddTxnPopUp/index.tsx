@@ -10,7 +10,6 @@ import "reactjs-popup/dist/index.css";
 
 import "./index.css";
 import useUserId from "../FetchUserId";
-import statusOfPage from "../../constants/apistatus";
 import { TailSpin } from "react-loader-spinner";
 
 const TxnDetails = {
@@ -190,11 +189,11 @@ const  AddTxnPopUp = () =>  {
     </div>)
 
     switch (status) {
-      case statusOfPage.Success :
+      case "SUCCESS":
         return renderSuccessView()
-      case statusOfPage.Failed:
+      case "FAILED":
         return renderFailureView()
-      case statusOfPage.Loading:
+      case "LOADING":
         return renderLoadingView()
       default :
       return renderSuccessView()

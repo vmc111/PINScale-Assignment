@@ -16,9 +16,9 @@ const DeletePopup = (props: {id: number}) => {
   const { id } = props;
   const apiUrl = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${id}`
   const userCreds = useUserId()
-  const {response, apiCall} = useApiCall({url: apiUrl, method: "Delete"})
-  const isAdmin =  typeof userCreds === "string"? false : userCreds.isAdmin
-  const userId =  typeof userCreds === "string"? 0 : userCreds.userId
+  const {response, apiCall} = useApiCall({url: apiUrl, method: "DELETE"})
+  const isAdmin = userCreds!.isAdmin
+  const userId = userCreds!.userId
 
   const role = isAdmin ? "admin" : "user";
   const onDelTxn = async () => {

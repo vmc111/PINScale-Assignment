@@ -3,7 +3,6 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { TailSpin as Loader } from "react-loader-spinner";
 import "./index.css";
 import Cookies from "js-cookie";
-import statusOfPage from "../../constants/apistatus";
 import useApiCall from "../UseApiCall/index";
 import React from "react";
 import useUserId from "../FetchUserId";
@@ -167,13 +166,13 @@ const Login = () => {
   );
 
   switch (status) {
-    case statusOfPage.Loading:
+    case "LOADING":
       return renderLoadingView();
 
-    case statusOfPage.Success:
+    case "SUCCESS":
       return renderSuccessView();
 
-    case statusOfPage.Failed:
+    case "FAILED":
       return renderSuccessView();
 
     default:

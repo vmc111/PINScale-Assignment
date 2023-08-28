@@ -1,9 +1,5 @@
 
-const statusOfPage = {
-  Initial: "INITIAL",
-  Loading: "LOADING",
-  Success: "SUCCESS",
-  Failed: "FAILED",
-};
+type Status = "INITIAL" | "SUCCESS" | "FAILED" | "LOADING"
 
-export default statusOfPage;
+
+export default Status;

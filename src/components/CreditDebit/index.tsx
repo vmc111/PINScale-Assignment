@@ -7,7 +7,6 @@ import useUserId from "../FetchUserId";
 
 import DebitBox from "../DebitBox";
 import CreditBox from "../CreditBox";
-import statusOfPage from "../../constants/apistatus";
 
 import "./index.css";
 
@@ -77,13 +76,13 @@ const CreditDebit = () => {
   );
 
   switch (status) {
-    case statusOfPage.Loading:
+    case "LOADING":
       return renderLoadingView();
 
-    case statusOfPage.Success:
+    case "SUCCESS":
       return renderSuccessView();
 
-    case statusOfPage.Failed:
+    case "FAILED":
       return renderFailedView();
 
     default:

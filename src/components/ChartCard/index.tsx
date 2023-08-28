@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import useApiCall from "../UseApiCall";
-import statusOfPage from "../../constants/apistatus";
+// import statusOfPage from "../../constants/apistatus";
 import useUserId from "../FetchUserId";
+import Status from "../../constants/apistatus";
 import { TailSpin } from "react-loader-spinner";
 
 import {
@@ -15,7 +16,7 @@ import {
 
 import "./index.css";
 
-import GetReqFormat from "../RecentTxnsDateConverter";
+import GetReqFormat from "../../utils/recentTxnsDateConverter";
 import Details from "../../constants/detailstype";
 
 type DataObj = {
@@ -119,11 +120,11 @@ const ChartCard = () => {
 
   const renderChartCardView = () => {
     switch (status) {
-      case statusOfPage.Success:
+      case "SUCCESS":
         return renderSuccessView();
-      case statusOfPage.Loading:
+      case "LOADING":
         return renderLoadingView();
-      case statusOfPage.Failed:
+      case "FAILED":
         return renderFailedView();
       default:
         return renderLoadingView();

@@ -7,7 +7,6 @@ import Sidebar from "../Sidebar";
 
 import "./index.css";
 import useApiCall from "../UseApiCall";
-import statusOfPage from "../../constants/apistatus";
 import { TailSpin } from "react-loader-spinner";
 import { Navigate } from "react-router";
 
@@ -204,11 +203,11 @@ const Profile = (): JSX.Element => {
 
   const displayView = () => {
     switch (status) {
-      case statusOfPage.Success:
+      case "SUCCESS":
         return renderSuccessView();
-      case statusOfPage.Loading:
+      case "LOADING":
         return renderLoadingView();
-      case statusOfPage.Failed:
+      case "FAILED":
         return renderFailedView();
 
       default:

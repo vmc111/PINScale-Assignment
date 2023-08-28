@@ -4,7 +4,6 @@ import { TailSpin } from "react-loader-spinner";
 import useApiCall from "../UseApiCall";
 
 import TransactionsRouteListItems from "../TransactionsRouteListItems";
-import statusOfPage from "../../constants/apistatus";
 
 import "./index.css";
 import useUserId from "../FetchUserId";
@@ -156,11 +155,11 @@ const TransactionRouteList = () => {
   );
 
   switch (status) {
-    case statusOfPage.Loading:
+    case "LOADING":
       return renderLoadingView();
-    case statusOfPage.Success:
+    case "SUCCESS":
       return renderSuccessView();
-    case statusOfPage.Failed:
+    case "FAILED":
       return renderFailedView();
 
     default:

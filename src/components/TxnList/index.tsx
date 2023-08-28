@@ -7,7 +7,6 @@ import useApiCall from "../UseApiCall";
 import TransactionsRouteListItems from "../TransactionsRouteListItems";
 
 import "./index.css";
-import statusOfPage from "../../constants/apistatus";
 
 type TransactionsObj = { amount: number; id: number; transactionName: string; userId: number; date: string; type: string; category: string; }
 type Transactions = {
@@ -76,13 +75,13 @@ const TxnList = () => {
   };
 
   switch (status) {
-    case statusOfPage.Loading:
+    case "LOADING":
       return renderLoadingView();
 
-    case statusOfPage.Success:
+    case "SUCCESS":
       return renderSucccessView();
 
-    case statusOfPage.Failed:
+    case "FAILED":
       return renderFailedView();
 
     default:
