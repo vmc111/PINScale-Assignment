@@ -9,23 +9,24 @@ import useUserId from "../FetchUserId";
 import "./index.css";
 import DeletePopup from "../DeletePopUp";
 import DateConverter from "../../utils/dateConverter";
+import { observer } from "mobx-react-lite";
 
 type Item = {
-    amount: number;
-    id: number;
-    transactionName: string;
-    userId: number;
-    date: string;
-    type: string;
-    category: string;
-}
+  amount: number;
+  id: number;
+  transactionName: string;
+  userId: number;
+  date: string;
+  type: "credit" | "debit";
+  category: string;
+};
 
 type Props = {
-  key: number,
-  item: Item
-}
+  key: number;
+  item: Item;
+};
 
-const TransactionsRouteListItems = (props: Props) => {
+const TransactionsRouteListItems = observer((props: Props) => {
   const { item } = props;
 
   const { id, transactionName, type, category, date, amount } = item;
@@ -45,8 +46,7 @@ const TransactionsRouteListItems = (props: Props) => {
 
   const userCreds = useUserId();
 
-  const admin = userCreds!.isAdmin;
- 
+  const admin = userCreds!.userId === 3;
 
   return (
     <tr className="transaction-item-row">
@@ -62,7 +62,7 @@ const TransactionsRouteListItems = (props: Props) => {
       </td>
       {!admin && (
         <td>
-          <UpdateTxnPopup />
+          <UpdateTxnPopup {...item} />
         </td>
       )}
       {!admin && (
@@ -72,6 +72,6 @@ const TransactionsRouteListItems = (props: Props) => {
       )}
     </tr>
   );
-};
+});
 
 export default TransactionsRouteListItems;

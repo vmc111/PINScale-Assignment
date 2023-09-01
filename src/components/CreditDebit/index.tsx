@@ -9,40 +9,34 @@ import DebitBox from "../DebitBox";
 import CreditBox from "../CreditBox";
 
 import "./index.css";
+import { useContext } from "react";
+import { TransactionsStoreContext } from "../../Context/StoresContext";
+import { observer } from "mobx-react-lite";
 
-type AmountObj = {type: string, sum: number}
+type AmountObj = { type: string; sum: number };
 
 type Data = {
- totals_credit_debit_transactions: AmountObj[] 
-}
+  totals_credit_debit_transactions: AmountObj[];
+};
 
-type Amount = { sum: number }
+type Amount = { sum: number };
 
-const CreditDebit = () => {
-  const [CreditAmountData, setCreditAmountData] = useState<Amount>({sum: 0});
-  const [DebitAmountData, setDebitAmountData] = useState<Amount>({sum: 0});
-  const [userCreds, setUserCreds] = useState(useUserId());
+const CreditDebit = observer(() => {
+  // const [CreditAmountData, setCreditAmountData] = useState<Amount>({sum: 0});
+  // const [DebitAmountData, setDebitAmountData] = useState<Amount>({sum: 0});
+  // const [userCreds, setUserCreds] = useState(useUserId());
+
+  const store = useContext(TransactionsStoreContext);
+
+  const userCreds = useUserId();
+  const CreditAmountData: Amount = { sum: store.store.totalCredit };
+  const DebitAmountData: Amount = { sum: store.store.totalDebit };
 
   const { response, apiCall, status } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/credit-debit-totals",
     method: "GET",
-    userId:userCreds!.userId,
+    userId: userCreds!.userId,
   });
-
-  useEffect(() => {
-    if (response !== null) {
-      const res: Data = response
-      const data = res.totals_credit_debit_transactions;
-
-      const creditAmount = data.find((each) => each.type === "credit");
-      const debitAmount = data.find((each) => each.type === "debit");
-
-      setCreditAmountData(
-        creditAmount?.sum !== undefined ? creditAmount : { sum: 0 }
-      );
-      setDebitAmountData(debitAmount !== undefined ? debitAmount : { sum: 0 });
-    }
-  }, [response]);
 
   useEffect(() => {
     apiCall();
@@ -88,6 +82,6 @@ const CreditDebit = () => {
     default:
       return renderLoadingView();
   }
-};
+});
 
 export default CreditDebit;
