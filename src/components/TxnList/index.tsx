@@ -7,15 +7,20 @@ import useApiCall from "../UseApiCall";
 import TransactionsRouteListItems from "../TransactionsRouteListItems";
 
 import "./index.css";
-import statusOfPage from "../../constants/apistatus";
+
+type TransactionsObj = { amount: number; id: number; transactionName: string; userId: number; date: string; type: string; category: string; }
+type Transactions = {
+  transactions : TransactionsObj[]
+}
+
 
 const TxnList = () => {
-  const [listOfTransactions, setListOfTransactions] = useState([]);
+  const [listOfTransactions, setListOfTransactions] = useState<TransactionsObj[]>();
   const [userCreds, setUserCreds] = useState(useUserId());
   const { response, apiCall, status } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0",
     method: "GET",
-    userId: userCreds.userId,
+    userId:userCreds!.userId,
   });
 
   useEffect(() => {
@@ -24,24 +29,19 @@ const TxnList = () => {
 
   useEffect(() => {
     if (response !== null) {
-      const txnData = response.transactions.map((each) => {
+      const result: Transactions = response
+      const txnData = result.transactions.map((each) => {
         return {
           amount: each.amount,
           id: each.id,
-          transactionName: each.transaction_name,
-          userId: each.user_id,
+          transactionName: each.transactionName,
+          userId: each.userId,
           date: each.date,
           type: each.type,
           category: each.category,
         };
       });
-
-      const sortedData = txnData.sort((a, b) => {
-        return new Date(a.date) - new Date(b.date);
-      });
-
-      const listOfTxns = sortedData.reverse();
-      setListOfTransactions(listOfTxns);
+      setListOfTransactions(txnData);
     }
   }, [response]);
 
@@ -51,19 +51,23 @@ const TxnList = () => {
     </div>
   );
 
+  const tryAgain = () => {
+    apiCall()
+  }
+
   const renderFailedView = () => (
     <div>
-      <button type="button" className="btn" onClick={this.tryAgain}>
+      <button type="button" className="btn" onClick={() => tryAgain()}>
         Try Again
       </button>
     </div>
   );
 
   const renderSucccessView = () => {
-    const threeTxns = listOfTransactions.slice(0, 3);
+    const threeTxns = listOfTransactions?.slice(0, 3);
     return (
       <table className="transactions-container">
-        {threeTxns.map((each) => (
+        {threeTxns?.map((each) => (
           <TransactionsRouteListItems key={each.id} item={each} />
         ))}
       </table>
@@ -71,13 +75,13 @@ const TxnList = () => {
   };
 
   switch (status) {
-    case statusOfPage.Loading:
+    case "LOADING":
       return renderLoadingView();
 
-    case statusOfPage.Success:
+    case "SUCCESS":
       return renderSucccessView();
 
-    case statusOfPage.Failed:
+    case "FAILED":
       return renderFailedView();
 
     default:

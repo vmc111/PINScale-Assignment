@@ -10,6 +10,8 @@ import "./index.css";
 import Sidebar from "../Sidebar";
 import Navbar from "../Navbar";
 
+import Details from "../../constants/detailstype";
+
 const Accounts = () => {
   const displayView = () => (
     <div className="account-container">
@@ -19,7 +21,7 @@ const Accounts = () => {
     </div>
   );
 
-  const jwtToken = useUserId();
+  const jwtToken: Details = useUserId();
 
   const res =
     jwtToken === undefined ? (
@@ -28,7 +30,7 @@ const Accounts = () => {
       <div className="container">
         <Sidebar />
         <div className="txn-container">
-          <Navbar>Account</Navbar>
+          <Navbar title="Account"/>
 
           {displayView()}
         </div>

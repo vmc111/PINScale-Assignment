@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import Cookies from "js-cookie";
 
@@ -29,8 +29,8 @@ const LogoutBtn = () => {
             <LuLogOut size={25} />
           </button>
         }
+        closeOnEscape
       >
-        {(close) => (
           <div className="logout-container">
             <LuLogOut color="#D97706" size={30} className="logout-logo" />
             <div>
@@ -40,13 +40,12 @@ const LogoutBtn = () => {
                 <button className="logout-btn" onClick={onLogOut}>
                   Yes, Logout
                 </button>
-                <button className="cancel-btn" onClick={() => close()}>
+                <button className="cancel-btn" >
                   Cancel
                 </button>
               </div>
             </div>
           </div>
-        )}
       </Popup>
     </div>
   );

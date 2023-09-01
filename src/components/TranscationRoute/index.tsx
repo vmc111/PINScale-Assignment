@@ -9,8 +9,7 @@ const TransactionRoute = () => {
     <div className="container">
       <Sidebar />
       <div className="txn-container">
-        <Navbar>Transactions</Navbar>
-
+        <Navbar title="Transactions" />
         <TransactionRouteList />
       </div>
     </div>

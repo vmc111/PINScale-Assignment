@@ -4,21 +4,47 @@ import { TailSpin } from "react-loader-spinner";
 import useApiCall from "../UseApiCall";
 
 import TransactionsRouteListItems from "../TransactionsRouteListItems";
-import statusOfPage from "../../constants/apistatus";
 
 import "./index.css";
 import useUserId from "../FetchUserId";
 
+type FinalDataObj = {
+    amount: number,
+    id: number,
+    transactionName: string,
+    userId: number,
+    date: string,
+    type: string,
+    category: string,
+  }
+
+  type InitialDataObj = {
+    amount: number,
+    id: number,
+    transaction_name: string,
+    user_id: number,
+    date: string,
+    type: string,
+    category: string,
+  }
+
+
+type FinalDataArray = FinalDataObj[]
+
+type Data = {
+  transactions: InitialDataObj[]
+}
+
 const TransactionRouteList = () => {
-  const [allTxnsList, setAllTxnsList] = useState([]);
-  const [filteredlist, setFilteredList] = useState([]);
+  const [allTxnsList, setAllTxnsList] = useState<FinalDataArray>();
+  const [filteredlist, setFilteredList] = useState<FinalDataArray>([]);
   const [activeBtn, setActiveBtn] = useState("");
   const userCreds = useUserId();
 
   const { response, apiCall, status } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=1000&offset=1",
     method: "GET",
-    userId: userCreds.userId,
+    userId: userCreds!.userId,
   });
 
   useEffect(() => {
@@ -27,7 +53,8 @@ const TransactionRouteList = () => {
 
   useEffect(() => {
     if (response !== null) {
-      const txnData = response.transactions.map((each) => {
+      const result: Data = response
+      const txnData = result.transactions.map((each) => {
         return {
           amount: each.amount,
           id: each.id,
@@ -39,9 +66,7 @@ const TransactionRouteList = () => {
         };
       });
 
-      const sortedData = txnData.sort((a, b) => {
-        return new Date(a.date) - new Date(b.date);
-      });
+      const sortedData = txnData.sort((a, b) => new Date(a.date) < new Date(b.date)? 1 : -1);
 
       const ListOfTxns = sortedData.reverse();
       setAllTxnsList(ListOfTxns);
@@ -50,20 +75,20 @@ const TransactionRouteList = () => {
     }
   }, [response]);
 
-  const onClickCredit = () => {
-    const filteredData = allTxnsList.filter((each) => each.type === "credit");
-    setFilteredList(filteredData);
+  const onClickCredit = (): void => {
+    const filteredData = allTxnsList!.filter((each) => each.type === "credit");
+    setFilteredList(filteredData!);
     setActiveBtn("Credit");
   };
 
-  const onClickDebit = () => {
-    const filteredData = allTxnsList.filter((each) => each.type === "debit");
+  const onClickDebit = (): void => {
+    const filteredData = allTxnsList!.filter((each) => each.type === "debit");
     setFilteredList(filteredData);
     setActiveBtn("Debit");
   };
 
-  const onAllTxns = () => {
-    setFilteredList(allTxnsList);
+  const onAllTxns = (): void => {
+    setFilteredList(allTxnsList!);
     setActiveBtn("AllTxn");
   };
 
@@ -130,11 +155,11 @@ const TransactionRouteList = () => {
   );
 
   switch (status) {
-    case statusOfPage.Loading:
+    case "LOADING":
       return renderLoadingView();
-    case statusOfPage.Success:
+    case "SUCCESS":
       return renderSuccessView();
-    case statusOfPage.Failed:
+    case "FAILED":
       return renderFailedView();
 
     default:

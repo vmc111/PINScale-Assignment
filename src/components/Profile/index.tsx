@@ -7,39 +7,54 @@ import Sidebar from "../Sidebar";
 
 import "./index.css";
 import useApiCall from "../UseApiCall";
-import statusOfPage from "../../constants/apistatus";
 import { TailSpin } from "react-loader-spinner";
+import { Navigate } from "react-router";
 
-const Profile = () => {
-  const [userDetails, setUserDetails] = useState({});
-  const [userCreds, setUserCreds] = useState({});
+type UserData = {
+  date_of_birth: string,
+  email: string,
+  id: number,
+  name: string,
+  country: string,
+  city: string,
+  present_address: string,
+  postal_code: string,
+  permanent_address: string
+}
+
+type Data = {
+  users: UserData[]
+}
+
+const Profile = (): JSX.Element => {
+  const [userDetails, setUserDetails] = useState<UserData>()
 
   const userFromHook = useUserId();
   const { response, status, apiCall } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/profile",
     method: "GET",
-    userId: userFromHook.userId,
+    userId:userFromHook!.userId,
   });
 
   useEffect(() => {
     if (response !== null) {
+      const result: Data = response
       const user = {
-        city: response.users[0].city,
-        country: response.users[0].country,
-        dateOfBirth: response.users[0].date_of_birth,
-        email: response.users[0].email,
-        id: response.users[0].id,
-        name: response.users[0].name,
-        permanentAddress: response.users[0].permanent_address,
-        postalCode: response.users[0].postal_code,
-        presentAddress: response.users[0].present_address,
+        city: result.users[0].city,
+        country: result.users[0].country,
+        date_of_birth: result.users[0].date_of_birth,
+        email: result.users[0].email,
+        id: result.users[0].id,
+        name: result.users[0].name,
+        permanent_address: result.users[0].permanent_address,
+        postal_code: result.users[0].postal_code,
+        present_address: result.users[0].present_address,
       };
       setUserDetails(user);
     }
   }, [response]);
 
   useEffect(() => {
-    setUserCreds(userFromHook);
     apiCall();
   }, []);
 
@@ -57,7 +72,7 @@ const Profile = () => {
             Your Name
           </label>
           <input
-            value={userDetails.name}
+            value={userDetails?.name === undefined ? "" : userDetails!.name}
             className="input-element"
             id="name"
             type="text"
@@ -71,7 +86,7 @@ const Profile = () => {
             className="input-element"
             id="UserName"
             type="text"
-            value={userDetails.name}
+            value={userDetails?.name === undefined ? "" : userDetails!.name}
           />
         </li>
         <li className="user-bio-li-items">
@@ -82,8 +97,7 @@ const Profile = () => {
             className="input-element"
             id="Email"
             type="email"
-            //   placeholder="email"
-            value={userDetails.email}
+            value={userDetails?.email === undefined ? "" : userDetails!.email}
           />
         </li>
         <li className="user-bio-li-items">
@@ -94,7 +108,6 @@ const Profile = () => {
             className="input-element"
             id="password"
             type="password"
-            //   placeholder="**********"
             value="**********"
           />
         </li>
@@ -104,7 +117,7 @@ const Profile = () => {
           </label>
           <select className="input-element" id="DOB" name="dob">
             <option className="option-el" value="Dob">
-              {userDetails.dateOfBirth}
+              {userDetails?.date_of_birth===undefined? "" : userDetails!.date_of_birth}
             </option>
           </select>
         </li>
@@ -117,7 +130,7 @@ const Profile = () => {
             id="presentAddress"
             type="text"
             placeholder="Present Address"
-            value={userDetails.presentAddress}
+            value={userDetails?.present_address===undefined? "" : userDetails!.present_address}
           />
         </li>
         <li className="user-bio-li-items">
@@ -129,7 +142,7 @@ const Profile = () => {
             id="permanentAddress"
             type="text"
             placeholder="Permanent Address"
-            value={userDetails.permanentAddress}
+            value={userDetails?.present_address===undefined? "": userDetails!.present_address}
           />
         </li>
         <li className="user-bio-li-items">
@@ -141,7 +154,7 @@ const Profile = () => {
             id="city"
             type="text"
             placeholder="City"
-            value={userDetails.city}
+            value={userDetails?.city===undefined? "":userDetails!.city}
           />
         </li>
         <li className="user-bio-li-items">
@@ -153,7 +166,7 @@ const Profile = () => {
             id="postal Code"
             type="text"
             placeholder="Postal Code"
-            value={userDetails.postalCode}
+            value={userDetails?.postal_code===undefined? "" : userDetails!.postal_code}
           />
         </li>
         <li className="user-bio-li-items">
@@ -178,9 +191,11 @@ const Profile = () => {
     </div>
   );
 
+  const tryAgain = (): void => {apiCall()}
+
   const renderFailedView = () => (
     <div>
-      <button type="button" className="btn" onClick={this.tryAgain}>
+      <button type="button" className="btn" onClick={() => tryAgain()}>
         Try Again
       </button>
     </div>
@@ -188,11 +203,11 @@ const Profile = () => {
 
   const displayView = () => {
     switch (status) {
-      case statusOfPage.Success:
+      case "SUCCESS":
         return renderSuccessView();
-      case statusOfPage.Loading:
+      case "LOADING":
         return renderLoadingView();
-      case statusOfPage.Failed:
+      case "FAILED":
         return renderFailedView();
 
       default:
@@ -200,13 +215,13 @@ const Profile = () => {
     }
   };
 
-  return userCreds === undefined ? (
-    window.location.replace("/login")
+  return userFromHook === undefined ? (
+    <Navigate to={"/login"} />
   ) : (
     <div className="container">
       <Sidebar />
       <div className="txn-container">
-        <Navbar>Profile</Navbar>
+        <Navbar title="Profile" />
         <div className="profile-container">{displayView()}</div>
       </div>
     </div>

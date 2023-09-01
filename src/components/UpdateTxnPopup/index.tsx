@@ -1,5 +1,3 @@
-import { Component } from "react";
-
 import Popup from "reactjs-popup";
 
 import { MdOutlineModeEditOutline } from "react-icons/md";
@@ -8,14 +6,12 @@ import "reactjs-popup/dist/index.css";
 
 import "./index.css";
 
-class UpdateTxnPopup extends Component {
-  state = { txnDetails: {} };
+const UpdateTxnPopup = () => {
 
-  onAddingTxn = (event) => {
+  const onAddingTxn = (event:  React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   };
 
-  render() {
     return (
       <div className="popup-container">
         <Popup
@@ -25,12 +21,12 @@ class UpdateTxnPopup extends Component {
               <MdOutlineModeEditOutline size={25} />
             </button>
           }
+          closeOnEscape
         >
-          {(close) => (
             <div className="add-txn-popup-container">
               <h1 className="add-txn-heading-text">Add Transaction</h1>
               <p className="add-txn-para-text">Make a Transaction</p>
-              <form className="add-txn-form" onSubmit={this.onAddingTxn}>
+              <form className="add-txn-form" onSubmit={(e) =>onAddingTxn(e)}>
                 <div className="input-container">
                   <label htmlFor="txnName" className="add-txn-label">
                     Transaction Name
@@ -102,11 +98,9 @@ class UpdateTxnPopup extends Component {
                 </div>
               </form>
             </div>
-          )}
         </Popup>
       </div>
     );
   }
-}
 
 export default UpdateTxnPopup;

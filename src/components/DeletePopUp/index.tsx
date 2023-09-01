@@ -2,50 +2,29 @@ import { useState } from "react";
 
 import Popup from "reactjs-popup";
 
-import Cookies from "js-cookie";
-
 import { LuAlertTriangle } from "react-icons/lu";
 
 import { HiOutlineTrash } from "react-icons/hi";
 
 import "reactjs-popup/dist/index.css";
+import useApiCall from "../UseApiCall";
+import useUserId from "../FetchUserId";
 
-const DeletePopup = (props) => {
-  // state = { txnDetails: {}, userCreds: {} };
+const DeletePopup = (props: {id: number}) => {
   const [txnDetails, setTxnDetails] = useState({});
-  const [userCreds, setUserCreds] = useState({});
 
+  const { id } = props;
+  const apiUrl = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${id}`
+  const userCreds = useUserId()
+  const {response, apiCall} = useApiCall({url: apiUrl, method: "DELETE"})
+  const isAdmin = userCreds!.isAdmin
+  const userId = userCreds!.userId
+
+  const role = isAdmin ? "admin" : "user";
   const onDelTxn = async () => {
-    const { id } = props;
-
-    const userCreds = Cookies.get("secret_token");
-
-    const parsedObject = JSON.parse(userCreds);
-
-    const { isAdmin, userId } = parsedObject;
-
-    const role = isAdmin ? "admin" : "user";
-
-    const ReqUrl = `https://bursting-gelding-24.hasura.app/api/rest/delete-transaction?id=${id}`;
-
-    var myHeaders = new Headers();
-    myHeaders.append("content-type", "application/json");
-    myHeaders.append(
-      "x-hasura-admin-secret",
-      "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF"
-    );
-    myHeaders.append("x-hasura-role", role);
-    myHeaders.append("x-hasura-user-id", `${userId}`);
-
-    var requestOptions = {
-      method: "DELETE",
-      headers: myHeaders,
-      redirect: "follow",
-    };
 
     try {
-      await fetch(ReqUrl, requestOptions);
-      window.location.reload(true);
+      apiCall()
     } catch (error) {
       alert("Cannot Delete");
       return;
@@ -62,7 +41,6 @@ const DeletePopup = (props) => {
           </button>
         }
       >
-        {(close) => (
           <div className="logout-container">
             <LuAlertTriangle
               color="#D97706"
@@ -79,13 +57,12 @@ const DeletePopup = (props) => {
                 <button className="logout-btn" onClick={onDelTxn}>
                   Yes, Delete
                 </button>
-                <button className="cancel-btn" onClick={() => close()}>
+                <button className="cancel-btn">
                   No, Leave it
                 </button>
               </div>
             </div>
           </div>
-        )}
       </Popup>
     </div>
   );

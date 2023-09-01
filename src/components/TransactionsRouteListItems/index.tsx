@@ -3,16 +3,29 @@ import {
   BsArrowUpCircle,
   BsArrowDownCircle,
 } from "react-icons/bs";
-
-import Cookies from "js-cookie";
-
 import UpdateTxnPopup from "../UpdateTxnPopup";
+import useUserId from "../FetchUserId";
 
 import "./index.css";
 import DeletePopup from "../DeletePopUp";
-import DateConverter from "../DateConverer";
+import DateConverter from "../../utils/dateConverter";
 
-const TransactionsRouteListItems = (props) => {
+type Item = {
+    amount: number;
+    id: number;
+    transactionName: string;
+    userId: number;
+    date: string;
+    type: string;
+    category: string;
+}
+
+type Props = {
+  key: number,
+  item: Item
+}
+
+const TransactionsRouteListItems = (props: Props) => {
   const { item } = props;
 
   const { id, transactionName, type, category, date, amount } = item;
@@ -30,13 +43,10 @@ const TransactionsRouteListItems = (props) => {
 
   const formattedDate = DateConverter(date);
 
-  const userCreds = Cookies.get("secret_token");
+  const userCreds = useUserId();
 
-  const parsedObject = JSON.parse(userCreds);
-
-  const { isAdmin } = parsedObject;
-
-  const admin = !isAdmin;
+  const admin = userCreds!.isAdmin;
+ 
 
   return (
     <tr className="transaction-item-row">
@@ -50,12 +60,12 @@ const TransactionsRouteListItems = (props) => {
         <BsCurrencyDollar />
         {amount}
       </td>
-      {admin && (
+      {!admin && (
         <td>
           <UpdateTxnPopup />
         </td>
       )}
-      {admin && (
+      {!admin && (
         <td>
           <DeletePopup id={id} />
         </td>
