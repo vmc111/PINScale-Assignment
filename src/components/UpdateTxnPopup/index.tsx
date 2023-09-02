@@ -5,11 +5,12 @@ import { MdOutlineModeEditOutline } from "react-icons/md";
 import "reactjs-popup/dist/index.css";
 
 import "./index.css";
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext, useState, useMemo } from "react";
 import { TransactionObj } from "../../constants/storeConstants";
 import useApiCall from "../UseApiCall";
 import { TransactionsStoreContext } from "../../Context/StoresContext";
 import useUserId from "../FetchUserId";
+import TransactionObject from "../../utils/Stores/Modals/TransactionObject";
 
 type Item = {
   amount: number;
@@ -53,7 +54,10 @@ const UpdateTxnPopup = observer((item: Item) => {
     amount: transac.amount,
     date: transac.date,
   };
-  const [data, setData] = useState<NewData>(apiTransaction);
+
+  const createTransactionObject = (): TransactionObject =>
+    new TransactionObject(item);
+  const data = useMemo(() => createTransactionObject(), []);
   const apiUrl =
     "https://bursting-gelding-24.hasura.app/api/rest/update-transaction";
   const newheaders = {
@@ -63,11 +67,20 @@ const UpdateTxnPopup = observer((item: Item) => {
     "x-hasura-role": "user",
     "x-hasura-user-id": `${useUserId()!.userId}`,
   };
+
+  const newData: NewData = {
+    id: data.id,
+    name: data.transactionName,
+    category: data.category,
+    type: data.type,
+    amount: data.amount,
+    date: data.date,
+  };
   const { response, apiCall, status } = useApiCall({
     url: apiUrl,
     method: "POST",
     headers: newheaders,
-    body: { ...data, date: new Date(data.date) },
+    body: { ...newData, date: new Date(newData.date) },
   });
 
   const store = useContext(TransactionsStoreContext);
@@ -123,12 +136,12 @@ const UpdateTxnPopup = observer((item: Item) => {
                 type="text"
                 placeholder="Enter Name"
                 className="add-txn-input"
-                value={data.name}
+                value={data.transactionName}
                 onChange={(e) =>
-                  setData((preState) => ({
-                    ...preState,
-                    name: e.target.value,
-                  }))
+                  data.editTransaction({
+                    ...data,
+                    transactionName: e.target.value,
+                  })
                 }
               />
             </div>
@@ -141,12 +154,10 @@ const UpdateTxnPopup = observer((item: Item) => {
                 placeholder="Select Transaction Type"
                 className="add-txn-input"
                 value={data.type}
-                onChange={(e) =>
-                  setData((preState) => ({
-                    ...preState,
-                    type: e.target.value! as "credit" | "debit",
-                  }))
-                }
+                onChange={(e) => {
+                  const value = e.target.value as "credit" | "debit";
+                  data.editTransaction({ ...data, type: value });
+                }}
               >
                 <option value="credit">credit</option>
                 <option value="debit">debit</option>
@@ -162,10 +173,7 @@ const UpdateTxnPopup = observer((item: Item) => {
                 className="add-txn-input"
                 value={data.category}
                 onChange={(e) =>
-                  setData((preState) => ({
-                    ...preState,
-                    category: e.target.value!,
-                  }))
+                  data.editTransaction({ ...data, category: e.target.value })
                 }
               >
                 <option value="Food">Food</option>
@@ -187,10 +195,10 @@ const UpdateTxnPopup = observer((item: Item) => {
                 className="add-txn-input"
                 value={data.amount}
                 onChange={(e) =>
-                  setData((preState) => ({
-                    ...preState,
-                    amount: parseInt(e.target.value!),
-                  }))
+                  data.editTransaction({
+                    ...data,
+                    amount: parseInt(e.target.value),
+                  })
                 }
               />
             </div>
@@ -205,10 +213,7 @@ const UpdateTxnPopup = observer((item: Item) => {
                 className="add-txn-input"
                 value={data.date.split("T", 1).toString()}
                 onChange={(e) =>
-                  setData((preState) => ({
-                    ...preState,
-                    date: e.target.value!,
-                  }))
+                  data.editTransaction({ ...data, date: e.target.value })
                 }
               />
             </div>

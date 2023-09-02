@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useMemo } from "react";
 
 import Popup from "reactjs-popup";
 
@@ -13,6 +13,8 @@ import useUserId from "../FetchUserId";
 import { TailSpin } from "react-loader-spinner";
 import { TransactionsStoreContext } from "../../Context/StoresContext";
 import { TransactionObj } from "../../constants/storeConstants";
+import TransactionObject from "../../utils/Stores/Modals/TransactionObject";
+import { observer } from "mobx-react-lite";
 
 type Data = {
   insert_transactions_one: {
@@ -25,7 +27,7 @@ type Data = {
   };
 };
 
-const AddTxnPopUp = () => {
+const AddTxnPopUp = observer(() => {
   const txn: TransactionObj = {
     transactionName: "",
     id: 0,
@@ -35,7 +37,15 @@ const AddTxnPopUp = () => {
     date: "",
     category: "Food",
   };
-  const [txnDetails, setTxnDetails] = useState<TransactionObj>(txn);
+
+  const createNewTransactionObject = (): TransactionObject =>
+    new TransactionObject(txn);
+  const newTxnDetails: TransactionObject = useMemo(
+    () => createNewTransactionObject(),
+    []
+  );
+  const txnDetails: TransactionObj = { ...newTxnDetails };
+
   const userCreds = useUserId();
 
   const store = useContext(TransactionsStoreContext);
@@ -83,30 +93,9 @@ const AddTxnPopUp = () => {
     }
   }, [response]);
 
-  const onTypingName = (value: string) => {
-    setTxnDetails((preState) => ({ ...preState, transactionName: value }));
-  };
-
-  const onTypingAmount = (newValue: string) => {
-    const numAmount = parseInt(newValue);
-    setTxnDetails((preState) => ({ ...preState, amount: numAmount }));
-  };
-
-  const onTxnType = (newValue: "credit" | "debit") => {
-    setTxnDetails((preState) => ({ ...preState, type: newValue }));
-  };
-
-  const onChangingDate = (newValue: string) => {
-    setTxnDetails((preState) => ({ ...preState, date: newValue }));
-  };
-
-  const onCategorySelection = (newValue: string) => {
-    setTxnDetails((preState) => ({ ...preState, category: newValue }));
-  };
-
   const onAddingTxn = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const { transactionName, amount } = txnDetails;
+    const { transactionName, category, amount, type, date } = newTxnDetails;
 
     const amountValidation = amount > 0;
 
@@ -128,9 +117,7 @@ const AddTxnPopUp = () => {
     }
   };
 
-  const tryAgain = () => window.location.reload;
-
-  const { transactionName, category, amount, type, date } = txnDetails;
+  const tryAgain = () => apiCall();
 
   const renderSuccessView = () => (
     <div className="popup-container">
@@ -156,8 +143,13 @@ const AddTxnPopUp = () => {
                 type="text"
                 placeholder="Enter Name"
                 className="add-txn-input"
-                value={transactionName}
-                onChange={(e) => onTypingName(e.target.value)}
+                value={newTxnDetails.transactionName}
+                onChange={(e) =>
+                  newTxnDetails.editTransaction({
+                    ...newTxnDetails,
+                    transactionName: e.target.value,
+                  })
+                }
               />
             </div>
             <div className="input-container">
@@ -168,9 +160,12 @@ const AddTxnPopUp = () => {
                 id="txnType"
                 placeholder="Select Transaction Type"
                 className="add-txn-input"
-                value={type}
+                value={newTxnDetails.type}
                 onChange={(e) =>
-                  onTxnType(e.target.value as "credit" | "debit")
+                  newTxnDetails.editTransaction({
+                    ...newTxnDetails,
+                    type: e.target.value as "credit" | "debit",
+                  })
                 }
               >
                 <option value="credit">credit</option>
@@ -185,8 +180,13 @@ const AddTxnPopUp = () => {
                 id="txnCategory"
                 placeholder="Select Transaction Type"
                 className="add-txn-input"
-                value={category}
-                onChange={(e) => onCategorySelection(e.target.value!)}
+                value={newTxnDetails.category}
+                onChange={(e) =>
+                  newTxnDetails.editTransaction({
+                    ...newTxnDetails,
+                    category: e.target.value,
+                  })
+                }
               >
                 <option value="Food">Food</option>
                 <option value="Shopping">Shopping</option>
@@ -205,8 +205,13 @@ const AddTxnPopUp = () => {
                 type="text"
                 placeholder="Enter Your Amount"
                 className="add-txn-input"
-                value={amount.toString()}
-                onChange={(e) => onTypingAmount(e.target.value)}
+                value={newTxnDetails.amount.toString()}
+                onChange={(e) =>
+                  newTxnDetails.editTransaction({
+                    ...newTxnDetails,
+                    amount: parseInt(e.target.value),
+                  })
+                }
               />
             </div>
             <div className="input-container">
@@ -216,10 +221,15 @@ const AddTxnPopUp = () => {
               <input
                 id="date"
                 type="date"
-                value={date}
+                value={newTxnDetails.date}
                 placeholder="Enter Name"
                 className="add-txn-input"
-                onChange={(e) => onChangingDate(e.target.value)}
+                onChange={(e) =>
+                  newTxnDetails.editTransaction({
+                    ...newTxnDetails,
+                    date: e.target.value,
+                  })
+                }
               />
             </div>
             <div>
@@ -241,7 +251,7 @@ const AddTxnPopUp = () => {
 
   const renderFailureView = () => (
     <div>
-      <button type="button" className="btn" onClick={tryAgain()}>
+      <button type="button" className="btn" onClick={() => tryAgain()}>
         Try Again
       </button>
       {errorMsg.showErrorMsg && <p className="error">{errorMsg.msg}</p>}
@@ -258,6 +268,6 @@ const AddTxnPopUp = () => {
     default:
       return renderSuccessView();
   }
-};
+});
 
 export default AddTxnPopUp;

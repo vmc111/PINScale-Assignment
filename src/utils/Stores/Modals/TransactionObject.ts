@@ -28,7 +28,6 @@ class TransactionObject {
     }
 
     editTransaction = (newTransaction: TransactionObj): void => {
-        console.log(newTransaction)
         this.id = newTransaction.id
         this.type = newTransaction.type
         this.amount = newTransaction.amount

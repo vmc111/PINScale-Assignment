@@ -26,7 +26,7 @@ type Transactions = {
 
 const TxnList = observer(() => {
   const store = useContext(TransactionsStoreContext);
-  const listOfTransactions = store.store.Lat3Transactions;
+  const listOfTransactions = store.store.Last3Transactions;
   const userCreds = useUserId();
   const { response, apiCall, status } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0",

@@ -13,12 +13,11 @@ class TransactionsStore {
             deleteTransaction: action,
             addTransaction: action,
             setTransactionsList: action,
-            // setTransactionObj: action,
             totalCredit: computed,
             totalDebit: computed,
             creditTransactionsArray: computed,
             debitTransactionsArray: computed,
-            Lat3Transactions: computed
+            Last3Transactions: computed
         })
     }
 
@@ -30,12 +29,6 @@ class TransactionsStore {
         })
         this.transactionsList = newList
     }
-
-    // setTransactionObj = (transaction: TransactionObj) => {
-    //     const index = this.transactionsList.findIndex(each => each.id === transaction.id)
-    //     this.transactionsList[index].editTransaction(transaction)
-    //     console.log(this.transactionsList[index])
-    // }
 
     deleteTransaction = (id: number): void => {
         const newList = this.transactionsList.filter(eachTransaction => eachTransaction.id !== id)
@@ -74,7 +67,7 @@ class TransactionsStore {
         return this.transactionsList.filter(eachTransaction => eachTransaction.type ==="debit");
     }
 
-    get Lat3Transactions (): TransactionObj[] {
+    get Last3Transactions (): TransactionObj[] {
         return this.transactionsList.slice(0,3)
     }
 
