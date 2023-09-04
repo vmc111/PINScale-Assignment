@@ -1,10 +1,10 @@
 import { action, makeObservable, observable } from "mobx";
 
-import { TransactionObj } from "../../../constants/storeConstants";
+import { DebitCredit, TransactionObj } from "../../types/storeConstants";
 
-class TransactionObject {
+class TransactionModel {
     id: number
-    type: "credit" | "debit";
+    type: DebitCredit;
     amount: number;
     transactionName: string;
     userId: number;
@@ -16,7 +16,11 @@ class TransactionObject {
             id: observable,
             transactionName: observable,
             type:observable ,amount : observable  ,userId : observable   ,date : observable    ,category : observable,
-            editTransaction: action,
+            setType: action.bound,
+            setAmount: action.bound,
+            setTransactionName: action.bound,
+            setDate: action.bound,
+            setCategory: action.bound
         })
         this.id = transaction.id
         this.amount = transaction.amount
@@ -27,15 +31,25 @@ class TransactionObject {
         this.userId = transaction.userId
     }
 
-    editTransaction = (newTransaction: TransactionObj): void => {
-        this.id = newTransaction.id
-        this.type = newTransaction.type
-        this.amount = newTransaction.amount
-        this.category = newTransaction.category
-        this.date = newTransaction.date
-        this.userId = newTransaction.userId
-        this.transactionName = newTransaction.transactionName
+    setType (type: DebitCredit) : void{
+        this.type = type
+    }
+
+    setAmount(amount: number): void {
+        this.amount = amount
+    }
+
+    setTransactionName (name: string): void {
+        this.transactionName = name
+    }
+
+    setDate (date: string): void {
+        this.date = date
+    }
+
+    setCategory (category: string): void {
+        this.category = category
     }
 }
 
-export default TransactionObject
+export default TransactionModel

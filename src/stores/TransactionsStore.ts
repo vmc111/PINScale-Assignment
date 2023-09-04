@@ -1,43 +1,38 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import { TransactionObj } from "../../constants/storeConstants";
-import TransactionObject from "./Modals/TransactionObject";
+import { TransactionObj } from "../types/storeConstants";
+import TransactionModel from "./models/TransactionObjectmodel";
 
 
 
 class TransactionsStore {
-     transactionsList: Array<TransactionObject> | [] = []
+     transactionsList: Array<TransactionModel> | [] = []
 
     constructor() {
         makeObservable(this, {
             transactionsList: observable,
-            deleteTransaction: action,
-            addTransaction: action,
-            setTransactionsList: action,
+            deleteTransaction: action.bound,
+            addTransaction: action.bound,
+            setTransactionsList: action.bound,
             totalCredit: computed,
             totalDebit: computed,
             creditTransactionsArray: computed,
             debitTransactionsArray: computed,
-            Last3Transactions: computed
+            lastThreeTransactions: computed
         })
     }
 
-    setTransactionsList = (transactionsList: Array<TransactionObj>): void => {
-        
-        const newList = transactionsList.map(each => {
-            const newObj = new TransactionObject(each)
-            return newObj
-        })
-        this.transactionsList = newList
+    setTransactionsList(transactionsList: Array<TransactionModel>): void  {
+        this.transactionsList = transactionsList
     }
 
-    deleteTransaction = (id: number): void => {
+    deleteTransaction(id: number): void{
         const newList = this.transactionsList.filter(eachTransaction => eachTransaction.id !== id)
         this.transactionsList = newList
     }
 
-    addTransaction = (newTransaction: TransactionObj): void => {
-        const newObj = new TransactionObject(newTransaction)
-        const newTransactionsArray: Array<TransactionObject> = [newObj, ...this.transactionsList]
+    addTransaction(newTransaction: TransactionObj): void{
+        const newObj = new TransactionModel(newTransaction)
+        const newTransactionsArray: Array<TransactionModel> = [newObj, ...this.transactionsList]
         this.transactionsList = newTransactionsArray 
     }
 
@@ -59,15 +54,15 @@ class TransactionsStore {
         return totalDebitAmount
     }
 
-    get creditTransactionsArray (): TransactionObj[] {
+    get creditTransactionsArray (): TransactionModel[] {
         return this.transactionsList.filter(eachTransaction => eachTransaction.type ==="credit");
     }
 
-    get debitTransactionsArray (): TransactionObj[] {
+    get debitTransactionsArray (): TransactionModel[] {
         return this.transactionsList.filter(eachTransaction => eachTransaction.type ==="debit");
     }
 
-    get Last3Transactions (): TransactionObj[] {
+    get lastThreeTransactions (): TransactionObj[] {
         return this.transactionsList.slice(0,3)
     }
 

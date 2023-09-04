@@ -1,32 +1,20 @@
-import CreditDebit from "../CreditDebit";
-
+import { useContext, useEffect } from "react";
 import { Navigate } from "react-router-dom";
+import { observer } from "mobx-react";
 
+import { TransactionStoreContext } from "../../context/StoresContext";
+import { DebitCredit, TransactionObj } from "../../types/storeConstants";
+import CreditDebit from "../CreditDebit";
 import TransactionsCard from "../TranscationsCard";
-import useUserId from "../FetchUserId";
+import useUserId from "../../hooks/FetchUserId";
 import ChartCard from "../ChartCard";
-
-import "./index.css";
 import Sidebar from "../Sidebar";
 import Navbar from "../Navbar";
+import Details from "../../types/detailstype";
+import useApiCall from "../../hooks/UseApiCall";
+import TransactionModel from "../../stores/models/TransactionObjectmodel";
+import "./index.css";
 
-import Details from "../../constants/detailstype";
-import { useContext, useEffect } from "react";
-import { TransactionsStoreContext } from "../../Context/StoresContext";
-import useApiCall from "../UseApiCall";
-import { TransactionObj } from "../../constants/storeConstants";
-import { observer } from "mobx-react-lite";
-
-type FinalDataObj = {
-  amount: number;
-  id: number;
-  transactionName: string;
-  userId: number;
-  date: string;
-  type: "credit" | "debit";
-  category: string;
-};
-type FinalDataArray = FinalDataObj[];
 type InitialDataObj = {
   amount: number;
   id: number;
@@ -40,8 +28,8 @@ type Data = {
   transactions: InitialDataObj[];
 };
 
-const Accounts = observer(() => {
-  const store = useContext(TransactionsStoreContext);
+const Accounts = () => {
+  const store = useContext(TransactionStoreContext);
 
   const userCreds = useUserId();
   const { response, apiCall, status } = useApiCall({
@@ -71,7 +59,10 @@ const Accounts = observer(() => {
       const sortedData: TransactionObj[] = txnData.sort((a, b) =>
         new Date(a.date) < new Date(b.date) ? 1 : -1
       );
-      store.store.setTransactionsList(sortedData);
+      const addTransactionList = sortedData.map(
+        (each) => new TransactionModel(each)
+      );
+      store?.setTransactionsList(addTransactionList);
     }
   }, [response]);
 
@@ -100,6 +91,6 @@ const Accounts = observer(() => {
     );
 
   return res;
-});
+};
 
-export default Accounts;
+export default observer(Accounts);

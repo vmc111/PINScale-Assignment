@@ -1,21 +1,19 @@
 import { useContext, useEffect } from "react";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import Popup from "reactjs-popup";
-
 import { LuAlertTriangle } from "react-icons/lu";
-
 import { HiOutlineTrash } from "react-icons/hi";
-
 import "reactjs-popup/dist/index.css";
-import useApiCall from "../UseApiCall";
-import useUserId from "../FetchUserId";
-import { TransactionsStoreContext } from "../../Context/StoresContext";
 
-const DeletePopup = observer((props: { id: number }) => {
+import useApiCall from "../../hooks/UseApiCall";
+import useUserId from "../../hooks/FetchUserId";
+import { TransactionStoreContext } from "../../context/StoresContext";
+
+const DeletePopup = (props: { id: number }) => {
   const { id } = props;
   const userCreds = useUserId();
 
-  const store = useContext(TransactionsStoreContext);
+  const store = useContext(TransactionStoreContext);
 
   const apiUrl =
     "https://bursting-gelding-24.hasura.app/api/rest/delete-transaction";
@@ -32,11 +30,10 @@ const DeletePopup = observer((props: { id: number }) => {
     headers: newheaders,
     body: { id: id },
   });
-  const isAdmin = userCreds!.isAdmin;
 
   useEffect(() => {
     if (response !== null && status === "SUCCESS") {
-      store.store.deleteTransaction(id);
+      store?.deleteTransaction(id);
     }
   }, [response]);
 
@@ -73,6 +70,6 @@ const DeletePopup = observer((props: { id: number }) => {
       </Popup>
     </div>
   );
-});
+};
 
-export default DeletePopup;
+export default observer(DeletePopup);

@@ -1,16 +1,19 @@
 import Popup from "reactjs-popup";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
+import { useEffect, useContext, useState } from "react";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 
 import "reactjs-popup/dist/index.css";
 
 import "./index.css";
-import { useEffect, useContext, useState, useMemo } from "react";
-import { TransactionObj } from "../../constants/storeConstants";
-import useApiCall from "../UseApiCall";
-import { TransactionsStoreContext } from "../../Context/StoresContext";
-import useUserId from "../FetchUserId";
-import TransactionObject from "../../utils/Stores/Modals/TransactionObject";
+import { DebitCredit, TransactionObj } from "../../types/storeConstants";
+import useApiCall from "../../hooks/UseApiCall";
+import { TransactionStoreContext } from "../../context/StoresContext";
+import useUserId from "../../hooks/FetchUserId";
+
+import TransactionModel from "../../stores/models/TransactionObjectmodel";
+
+type Keys = "id" | "transactionName" | "category" | "type" | "amount" | "date";
 
 type Item = {
   amount: number;
@@ -18,14 +21,14 @@ type Item = {
   transactionName: string;
   userId: number;
   date: string;
-  type: "credit" | "debit";
+  type: DebitCredit;
   category: string;
 };
 
 type NewData = {
   id: number;
   name: string;
-  type: "credit" | "debit";
+  type: DebitCredit;
   category: string;
   amount: number;
   date: string;
@@ -34,7 +37,7 @@ type NewData = {
 type ResponseObj = {
   id: number;
   transaction_name: string;
-  type: "credit" | "debit";
+  type: DebitCredit;
   category: string;
   amount: number;
   date: string;
@@ -44,20 +47,8 @@ type Response = {
   update_transactions_by_pk: ResponseObj;
 };
 
-const UpdateTxnPopup = observer((item: Item) => {
-  const transac = item;
-  const apiTransaction: NewData = {
-    id: transac.id,
-    name: transac.transactionName,
-    type: transac.type,
-    category: transac.category,
-    amount: transac.amount,
-    date: transac.date,
-  };
-
-  const createTransactionObject = (): TransactionObject =>
-    new TransactionObject(item);
-  const data = useMemo(() => createTransactionObject(), []);
+const UpdateTxnPopup = (item: Item) => {
+  const [data] = useState(new TransactionModel(item));
   const apiUrl =
     "https://bursting-gelding-24.hasura.app/api/rest/update-transaction";
   const newheaders = {
@@ -83,7 +74,7 @@ const UpdateTxnPopup = observer((item: Item) => {
     body: { ...newData, date: new Date(newData.date) },
   });
 
-  const store = useContext(TransactionsStoreContext);
+  const store = useContext(TransactionStoreContext);
 
   useEffect(() => {
     if (response !== null && status === "SUCCESS") {
@@ -97,10 +88,37 @@ const UpdateTxnPopup = observer((item: Item) => {
         date: result.update_transactions_by_pk.date,
         userId: item.userId,
       };
-      const index = store.store.transactionsList.findIndex(
+      const index: number = store?.transactionsList.findIndex(
         (each) => each.id === newObj.id
+      )!;
+
+      const transaction: TransactionModel = store?.transactionsList[index]!;
+      const keysArray: Keys[] = Object.keys(newObj) as Keys[];
+      const keysToUpdate = keysArray.filter(
+        (each) => transaction[each] !== newObj[each]
       );
-      store.store.transactionsList[index].editTransaction(newObj);
+      keysToUpdate.forEach((key) => {
+        switch (key) {
+          case "transactionName":
+            transaction.setTransactionName(newObj.transactionName);
+            break;
+          case "amount":
+            transaction.setAmount(newObj.amount);
+            break;
+          case "category":
+            transaction.setCategory(newObj.category);
+            break;
+          case "type":
+            transaction.setType(newObj.type);
+            break;
+          case "date":
+            transaction.setDate(newObj.date);
+            break;
+          default:
+            break;
+        }
+      });
+
       alert("Update Complete....");
     } else if (status === "FAILED") {
       alert("Failed to edit..");
@@ -137,12 +155,7 @@ const UpdateTxnPopup = observer((item: Item) => {
                 placeholder="Enter Name"
                 className="add-txn-input"
                 value={data.transactionName}
-                onChange={(e) =>
-                  data.editTransaction({
-                    ...data,
-                    transactionName: e.target.value,
-                  })
-                }
+                onChange={(e) => data.setTransactionName(e.target.value)}
               />
             </div>
             <div className="input-container">
@@ -155,8 +168,8 @@ const UpdateTxnPopup = observer((item: Item) => {
                 className="add-txn-input"
                 value={data.type}
                 onChange={(e) => {
-                  const value = e.target.value as "credit" | "debit";
-                  data.editTransaction({ ...data, type: value });
+                  const value = e.target.value as DebitCredit;
+                  data.setType(value);
                 }}
               >
                 <option value="credit">credit</option>
@@ -172,9 +185,7 @@ const UpdateTxnPopup = observer((item: Item) => {
                 placeholder="Select Transaction Type"
                 className="add-txn-input"
                 value={data.category}
-                onChange={(e) =>
-                  data.editTransaction({ ...data, category: e.target.value })
-                }
+                onChange={(e) => data.setCategory(e.target.value)}
               >
                 <option value="Food">Food</option>
                 <option value="Shopping">Shopping</option>
@@ -193,13 +204,8 @@ const UpdateTxnPopup = observer((item: Item) => {
                 type="text"
                 placeholder="Enter Your Amount"
                 className="add-txn-input"
-                value={data.amount}
-                onChange={(e) =>
-                  data.editTransaction({
-                    ...data,
-                    amount: parseInt(e.target.value),
-                  })
-                }
+                value={data.amount.toString()}
+                onChange={(e) => data.setAmount(parseInt(e.target.value))}
               />
             </div>
             <div className="input-container">
@@ -212,9 +218,7 @@ const UpdateTxnPopup = observer((item: Item) => {
                 placeholder="Enter transaction Date"
                 className="add-txn-input"
                 value={data.date.split("T", 1).toString()}
-                onChange={(e) =>
-                  data.editTransaction({ ...data, date: e.target.value })
-                }
+                onChange={(e) => data.setDate(e.target.value)}
               />
             </div>
             <div>
@@ -227,6 +231,6 @@ const UpdateTxnPopup = observer((item: Item) => {
       </Popup>
     </div>
   );
-});
+};
 
-export default UpdateTxnPopup;
+export default observer(UpdateTxnPopup);

@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import useApiCall from "../UseApiCall";
-// import statusOfPage from "../../constants/apistatus";
-import useUserId from "../FetchUserId";
-import Status from "../../constants/apistatus";
+import useApiCall from "../../hooks/UseApiCall";
+import useUserId from "../../hooks/FetchUserId";
 import { TailSpin } from "react-loader-spinner";
 
 import {
@@ -17,7 +15,7 @@ import {
 import "./index.css";
 
 import GetReqFormat from "../../utils/recentTxnsDateConverter";
-import Details from "../../constants/detailstype";
+import Details from "../../types/detailstype";
 
 type DataObj = {
   date: Date;

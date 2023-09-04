@@ -1,15 +1,16 @@
 import { useEffect, useState, useContext } from "react";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 
 import { TailSpin } from "react-loader-spinner";
-import useUserId from "../FetchUserId";
-import useApiCall from "../UseApiCall";
+import useUserId from "../../hooks/FetchUserId";
+import useApiCall from "../../hooks/UseApiCall";
 
 import TransactionsRouteListItems from "../TransactionsRouteListItems";
 
 import "./index.css";
-import { TransactionsStoreContext } from "../../Context/StoresContext";
-import { TransactionObj } from "../../constants/storeConstants";
+import { TransactionStoreContext } from "../../context/StoresContext";
+import { DebitCredit, TransactionObj } from "../../types/storeConstants";
+import TransactionModel from "../../stores/models/TransactionObjectmodel";
 
 type TransactionsObjs = {
   amount: number;
@@ -17,16 +18,16 @@ type TransactionsObjs = {
   transaction_name: string;
   user_id: number;
   date: string;
-  type: "credit" | "debit";
+  type: DebitCredit;
   category: string;
 };
 type Transactions = {
   transactions: TransactionsObjs[];
 };
 
-const TxnList = observer(() => {
-  const store = useContext(TransactionsStoreContext);
-  const listOfTransactions = store.store.Last3Transactions;
+const TxnList = () => {
+  const store = useContext(TransactionStoreContext);
+  const listOfTransactions = store?.lastThreeTransactions;
   const userCreds = useUserId();
   const { response, apiCall, status } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0",
@@ -48,11 +49,14 @@ const TxnList = observer(() => {
           transactionName: each.transaction_name,
           userId: each.user_id,
           date: each.date,
-          type: each.type as "credit" | "debit",
+          type: each.type as DebitCredit,
           category: each.category,
         };
       });
-      store.store.setTransactionsList(txnData);
+      const addToTransactionList = txnData.map(
+        (each) => new TransactionModel(each)
+      );
+      store?.setTransactionsList(addToTransactionList);
     }
   }, [response]);
 
@@ -98,6 +102,6 @@ const TxnList = observer(() => {
     default:
       return renderLoadingView();
   }
-});
+};
 
-export default TxnList;
+export default observer(TxnList);

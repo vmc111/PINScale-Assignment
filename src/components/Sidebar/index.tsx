@@ -1,10 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 
-import ProfileBox from "../ProfileBox";
-
 import { HiHome } from "react-icons/hi";
 import { FaUser } from "react-icons/fa";
 
+import ProfileBox from "../ProfileBox";
 import "./index.css";
 
 const Sidebar = () => {

@@ -1,33 +1,33 @@
 import { useState, useContext, useEffect, useMemo } from "react";
 
+import { observer } from "mobx-react";
 import Popup from "reactjs-popup";
 
+import { TailSpin } from "react-loader-spinner";
 import { AiOutlinePlus } from "react-icons/ai";
 
-import useApiCall from "../UseApiCall";
+import useApiCall from "../../hooks/UseApiCall";
 
 import "reactjs-popup/dist/index.css";
 
+import useUserId from "../../hooks/FetchUserId";
+import { TransactionStoreContext } from "../../context/StoresContext";
+import { DebitCredit, TransactionObj } from "../../types/storeConstants";
+import TransactionModel from "../../stores/models/TransactionObjectmodel";
 import "./index.css";
-import useUserId from "../FetchUserId";
-import { TailSpin } from "react-loader-spinner";
-import { TransactionsStoreContext } from "../../Context/StoresContext";
-import { TransactionObj } from "../../constants/storeConstants";
-import TransactionObject from "../../utils/Stores/Modals/TransactionObject";
-import { observer } from "mobx-react-lite";
 
 type Data = {
   insert_transactions_one: {
     id: number;
     transaction_name: string;
-    type: "credit" | "debit";
+    type: DebitCredit;
     date: string;
     category: string;
     amount: number;
   };
 };
 
-const AddTxnPopUp = observer(() => {
+const AddTxnPopUp = () => {
   const txn: TransactionObj = {
     transactionName: "",
     id: 0,
@@ -37,18 +37,12 @@ const AddTxnPopUp = observer(() => {
     date: "",
     category: "Food",
   };
-
-  const createNewTransactionObject = (): TransactionObject =>
-    new TransactionObject(txn);
-  const newTxnDetails: TransactionObject = useMemo(
-    () => createNewTransactionObject(),
-    []
-  );
+  const [newTxnDetails] = useState<TransactionModel>(new TransactionModel(txn));
   const txnDetails: TransactionObj = { ...newTxnDetails };
 
   const userCreds = useUserId();
 
-  const store = useContext(TransactionsStoreContext);
+  const store = useContext(TransactionStoreContext);
 
   const userId = userCreds!.userId;
   const apiBody = {
@@ -87,7 +81,7 @@ const AddTxnPopUp = observer(() => {
         date: res.insert_transactions_one.date,
         category: res.insert_transactions_one.category,
       };
-      store.store.addTransaction(newObj);
+      store?.addTransaction(newObj);
     } else if (response !== null && status === "FAILED") {
       alert("Failed to update");
     }
@@ -145,10 +139,7 @@ const AddTxnPopUp = observer(() => {
                 className="add-txn-input"
                 value={newTxnDetails.transactionName}
                 onChange={(e) =>
-                  newTxnDetails.editTransaction({
-                    ...newTxnDetails,
-                    transactionName: e.target.value,
-                  })
+                  newTxnDetails.setTransactionName(e.target.value)
                 }
               />
             </div>
@@ -162,10 +153,7 @@ const AddTxnPopUp = observer(() => {
                 className="add-txn-input"
                 value={newTxnDetails.type}
                 onChange={(e) =>
-                  newTxnDetails.editTransaction({
-                    ...newTxnDetails,
-                    type: e.target.value as "credit" | "debit",
-                  })
+                  newTxnDetails.setType(e.target.value as DebitCredit)
                 }
               >
                 <option value="credit">credit</option>
@@ -181,12 +169,7 @@ const AddTxnPopUp = observer(() => {
                 placeholder="Select Transaction Type"
                 className="add-txn-input"
                 value={newTxnDetails.category}
-                onChange={(e) =>
-                  newTxnDetails.editTransaction({
-                    ...newTxnDetails,
-                    category: e.target.value,
-                  })
-                }
+                onChange={(e) => newTxnDetails.setCategory(e.target.value)}
               >
                 <option value="Food">Food</option>
                 <option value="Shopping">Shopping</option>
@@ -205,12 +188,11 @@ const AddTxnPopUp = observer(() => {
                 type="text"
                 placeholder="Enter Your Amount"
                 className="add-txn-input"
-                value={newTxnDetails.amount.toString()}
+                value={
+                  newTxnDetails.amount ? newTxnDetails.amount.toString() : "0"
+                }
                 onChange={(e) =>
-                  newTxnDetails.editTransaction({
-                    ...newTxnDetails,
-                    amount: parseInt(e.target.value),
-                  })
+                  newTxnDetails.setAmount(parseInt(e.target.value))
                 }
               />
             </div>
@@ -224,12 +206,7 @@ const AddTxnPopUp = observer(() => {
                 value={newTxnDetails.date}
                 placeholder="Enter Name"
                 className="add-txn-input"
-                onChange={(e) =>
-                  newTxnDetails.editTransaction({
-                    ...newTxnDetails,
-                    date: e.target.value,
-                  })
-                }
+                onChange={(e) => newTxnDetails.setDate(e.target.value)}
               />
             </div>
             <div>
@@ -268,6 +245,6 @@ const AddTxnPopUp = observer(() => {
     default:
       return renderSuccessView();
   }
-});
+};
 
-export default AddTxnPopUp;
+export default observer(AddTxnPopUp);

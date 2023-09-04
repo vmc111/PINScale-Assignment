@@ -1,17 +1,18 @@
 import { useEffect, useState, useContext } from "react";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 
 import { TailSpin } from "react-loader-spinner";
-import useApiCall from "../UseApiCall";
+import useApiCall from "../../hooks/UseApiCall";
 
 import TransactionsRouteListItems from "../TransactionsRouteListItems";
 
 import "./index.css";
-import useUserId from "../FetchUserId";
-import { TransactionsStoreContext } from "../../Context/StoresContext";
-import { TransactionObj } from "../../constants/storeConstants";
+import useUserId from "../../hooks/FetchUserId";
+import { TransactionStoreContext } from "../../context/StoresContext";
+import { DebitCredit } from "../../types/storeConstants";
+import TransactionModel from "../../stores/models/TransactionObjectmodel";
 
-type Filter = "debit" | "credit" | "AllTxn";
+type Filter = DebitCredit | "AllTxn";
 
 type FinalDataObj = {
   amount: number;
@@ -19,7 +20,7 @@ type FinalDataObj = {
   transactionName: string;
   userId: number;
   date: string;
-  type: "debit" | "credit";
+  type: DebitCredit;
   category: string;
 };
 
@@ -29,33 +30,29 @@ type InitialDataObj = {
   transaction_name: string;
   user_id: number;
   date: string;
-  type: "debit" | "credit";
+  type: DebitCredit;
   category: string;
 };
-
-type FinalDataArray = FinalDataObj[];
 
 type Data = {
   transactions: InitialDataObj[];
 };
 
-const TransactionRouteList = observer(() => {
-  // const [allTxnsList, setAllTxnsList] = useState<FinalDataArray>();
-  // const [filteredlist, setFilteredList] = useState<FinalDataArray>([]);
+const TransactionRouteList = () => {
   const [activeBtn, setActiveBtn] = useState<Filter>("AllTxn");
   const userCreds = useUserId();
-  const store = useContext(TransactionsStoreContext);
-  let allTxnsList = store.store.transactionsList;
-  let filteredlist: TransactionObj[];
+  const store = useContext(TransactionStoreContext);
+  let allTxnsList = store?.transactionsList;
+  let filteredlist: TransactionModel[] | [] | undefined;
   switch (activeBtn) {
     case "AllTxn":
       filteredlist = allTxnsList;
       break;
     case "credit":
-      filteredlist = store.store.creditTransactionsArray;
+      filteredlist = store?.creditTransactionsArray;
       break;
     case "debit":
-      filteredlist = store.store.debitTransactionsArray;
+      filteredlist = store?.debitTransactionsArray;
       break;
     default:
       filteredlist = allTxnsList;
@@ -89,25 +86,25 @@ const TransactionRouteList = observer(() => {
       const sortedData = txnData.sort((a, b) =>
         new Date(a.date) < new Date(b.date) ? 1 : -1
       );
-      store.store.setTransactionsList(sortedData);
+      const addToTransactionList = sortedData.map(
+        (each) => new TransactionModel(each)
+      );
+      store?.setTransactionsList(addToTransactionList);
       setActiveBtn("AllTxn");
     }
   }, [response]);
 
   const onClickCredit = (): void => {
     const filteredData = allTxnsList!.filter((each) => each.type === "credit");
-    // setFilteredList(filteredData!);
     setActiveBtn("credit");
   };
 
   const onClickDebit = (): void => {
     const filteredData = allTxnsList!.filter((each) => each.type === "debit");
-    // setFilteredList(filteredData);
     setActiveBtn("debit");
   };
 
   const onAllTxns = (): void => {
-    // setFilteredList(allTxnsList!);
     setActiveBtn("AllTxn");
   };
 
@@ -149,7 +146,7 @@ const TransactionRouteList = observer(() => {
             <th> </th>
             <th> </th>
           </tr>
-          {filteredlist.map((each) => (
+          {filteredlist?.map((each) => (
             <TransactionsRouteListItems key={each.id} item={each} />
           ))}
         </table>
@@ -184,6 +181,6 @@ const TransactionRouteList = observer(() => {
     default:
       return renderLoadingView();
   }
-});
+};
 
-export default TransactionRouteList;
+export default observer(TransactionRouteList);

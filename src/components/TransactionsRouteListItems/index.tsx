@@ -3,13 +3,14 @@ import {
   BsArrowUpCircle,
   BsArrowDownCircle,
 } from "react-icons/bs";
+import { observer } from "mobx-react";
 import UpdateTxnPopup from "../UpdateTxnPopup";
-import useUserId from "../FetchUserId";
+import useUserId from "../../hooks/FetchUserId";
 
 import "./index.css";
 import DeletePopup from "../DeletePopUp";
 import DateConverter from "../../utils/dateConverter";
-import { observer } from "mobx-react-lite";
+import { DebitCredit } from "../../types/storeConstants";
 
 type Item = {
   amount: number;
@@ -17,7 +18,7 @@ type Item = {
   transactionName: string;
   userId: number;
   date: string;
-  type: "credit" | "debit";
+  type: DebitCredit;
   category: string;
 };
 
@@ -26,7 +27,7 @@ type Props = {
   item: Item;
 };
 
-const TransactionsRouteListItems = observer((props: Props) => {
+const TransactionsRouteListItems = (props: Props) => {
   const { item } = props;
 
   const { id, transactionName, type, category, date, amount } = item;
@@ -72,6 +73,6 @@ const TransactionsRouteListItems = observer((props: Props) => {
       )}
     </tr>
   );
-});
+};
 
-export default TransactionsRouteListItems;
+export default observer(TransactionsRouteListItems);
