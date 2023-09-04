@@ -5,7 +5,7 @@ import TransactionModel from "./models/TransactionObjectmodel";
 
 
 class TransactionsStore {
-     transactionsList: Array<TransactionModel> | [] = []
+     transactionsList: Array<TransactionModel> | [] 
 
     constructor() {
         makeObservable(this, {
@@ -19,6 +19,7 @@ class TransactionsStore {
             debitTransactionsArray: computed,
             lastThreeTransactions: computed
         })
+        this.transactionsList = []
     }
 
     setTransactionsList(transactionsList: Array<TransactionModel>): void  {
