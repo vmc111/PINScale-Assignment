@@ -5,7 +5,7 @@ import TransactionModel from "./models/TransactionObjectmodel";
 
 
 class TransactionsStore {
-     transactionsList: Array<TransactionModel> | [] 
+     transactionsList: Array<TransactionModel>
 
     constructor() {
         makeObservable(this, {
