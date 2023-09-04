@@ -1,26 +1,38 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { observer } from "mobx-react";
 
 import { TailSpin } from "react-loader-spinner";
-import useUserId from "../FetchUserId";
-import useApiCall from "../UseApiCall";
+import useUserId from "../../hooks/FetchUserId";
+import useApiCall from "../../hooks/UseApiCall";
 
 import TransactionsRouteListItems from "../TransactionsRouteListItems";
 
 import "./index.css";
+import { TransactionStoreContext } from "../../context/StoresContext";
+import { DebitCredit, TransactionObj } from "../../types/storeConstants";
+import TransactionModel from "../../stores/models/TransactionObjectmodel";
 
-type TransactionsObj = { amount: number; id: number; transactionName: string; userId: number; date: string; type: string; category: string; }
+type TransactionsObjs = {
+  amount: number;
+  id: number;
+  transaction_name: string;
+  user_id: number;
+  date: string;
+  type: DebitCredit;
+  category: string;
+};
 type Transactions = {
-  transactions : TransactionsObj[]
-}
-
+  transactions: TransactionsObjs[];
+};
 
 const TxnList = () => {
-  const [listOfTransactions, setListOfTransactions] = useState<TransactionsObj[]>();
-  const [userCreds, setUserCreds] = useState(useUserId());
+  const store = useContext(TransactionStoreContext);
+  const listOfTransactions = store?.lastThreeTransactions;
+  const userCreds = useUserId();
   const { response, apiCall, status } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0",
     method: "GET",
-    userId:userCreds!.userId,
+    userId: userCreds!.userId,
   });
 
   useEffect(() => {
@@ -29,19 +41,22 @@ const TxnList = () => {
 
   useEffect(() => {
     if (response !== null) {
-      const result: Transactions = response
-      const txnData = result.transactions.map((each) => {
+      const result: Transactions = response;
+      const txnData: TransactionObj[] = result.transactions.map((each) => {
         return {
           amount: each.amount,
           id: each.id,
-          transactionName: each.transactionName,
-          userId: each.userId,
+          transactionName: each.transaction_name,
+          userId: each.user_id,
           date: each.date,
-          type: each.type,
+          type: each.type as DebitCredit,
           category: each.category,
         };
       });
-      setListOfTransactions(txnData);
+      const addToTransactionList = txnData.map(
+        (each) => new TransactionModel(each)
+      );
+      store?.setTransactionsList(addToTransactionList);
     }
   }, [response]);
 
@@ -52,8 +67,8 @@ const TxnList = () => {
   );
 
   const tryAgain = () => {
-    apiCall()
-  }
+    apiCall();
+  };
 
   const renderFailedView = () => (
     <div>
@@ -89,4 +104,4 @@ const TxnList = () => {
   }
 };
 
-export default TxnList;
+export default observer(TxnList);

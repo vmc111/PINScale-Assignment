@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import "./index.css";
 import TxnList from "../TxnList";
 
@@ -10,4 +11,4 @@ const TransactionsCard = () => {
   );
 };
 
-export default TransactionsCard;
+export default observer(TransactionsCard);

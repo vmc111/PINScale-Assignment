@@ -1,48 +1,65 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { observer } from "mobx-react";
 
 import { TailSpin } from "react-loader-spinner";
-import useApiCall from "../UseApiCall";
+import useApiCall from "../../hooks/UseApiCall";
 
 import TransactionsRouteListItems from "../TransactionsRouteListItems";
 
 import "./index.css";
-import useUserId from "../FetchUserId";
+import useUserId from "../../hooks/FetchUserId";
+import { TransactionStoreContext } from "../../context/StoresContext";
+import { DebitCredit } from "../../types/storeConstants";
+import TransactionModel from "../../stores/models/TransactionObjectmodel";
+
+type Filter = DebitCredit | "AllTxn";
 
 type FinalDataObj = {
-    amount: number,
-    id: number,
-    transactionName: string,
-    userId: number,
-    date: string,
-    type: string,
-    category: string,
-  }
+  amount: number;
+  id: number;
+  transactionName: string;
+  userId: number;
+  date: string;
+  type: DebitCredit;
+  category: string;
+};
 
-  type InitialDataObj = {
-    amount: number,
-    id: number,
-    transaction_name: string,
-    user_id: number,
-    date: string,
-    type: string,
-    category: string,
-  }
-
-
-type FinalDataArray = FinalDataObj[]
+type InitialDataObj = {
+  amount: number;
+  id: number;
+  transaction_name: string;
+  user_id: number;
+  date: string;
+  type: DebitCredit;
+  category: string;
+};
 
 type Data = {
-  transactions: InitialDataObj[]
-}
+  transactions: InitialDataObj[];
+};
 
 const TransactionRouteList = () => {
-  const [allTxnsList, setAllTxnsList] = useState<FinalDataArray>();
-  const [filteredlist, setFilteredList] = useState<FinalDataArray>([]);
-  const [activeBtn, setActiveBtn] = useState("");
+  const [activeBtn, setActiveBtn] = useState<Filter>("AllTxn");
   const userCreds = useUserId();
+  const store = useContext(TransactionStoreContext);
+  let allTxnsList = store?.transactionsList;
+  let filteredlist: TransactionModel[] | [] | undefined;
+  switch (activeBtn) {
+    case "AllTxn":
+      filteredlist = allTxnsList;
+      break;
+    case "credit":
+      filteredlist = store?.creditTransactionsArray;
+      break;
+    case "debit":
+      filteredlist = store?.debitTransactionsArray;
+      break;
+    default:
+      filteredlist = allTxnsList;
+  }
 
   const { response, apiCall, status } = useApiCall({
-    url: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=1000&offset=1",
+    url: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=1000&offset=0",
     method: "GET",
     userId: userCreds!.userId,
   });
@@ -53,7 +70,7 @@ const TransactionRouteList = () => {
 
   useEffect(() => {
     if (response !== null) {
-      const result: Data = response
+      const result: Data = response;
       const txnData = result.transactions.map((each) => {
         return {
           amount: each.amount,
@@ -66,29 +83,28 @@ const TransactionRouteList = () => {
         };
       });
 
-      const sortedData = txnData.sort((a, b) => new Date(a.date) < new Date(b.date)? 1 : -1);
-
-      const ListOfTxns = sortedData.reverse();
-      setAllTxnsList(ListOfTxns);
-      setFilteredList(ListOfTxns);
+      const sortedData = txnData.sort((a, b) =>
+        new Date(a.date) < new Date(b.date) ? 1 : -1
+      );
+      const addToTransactionList = sortedData.map(
+        (each) => new TransactionModel(each)
+      );
+      store?.setTransactionsList(addToTransactionList);
       setActiveBtn("AllTxn");
     }
   }, [response]);
 
   const onClickCredit = (): void => {
     const filteredData = allTxnsList!.filter((each) => each.type === "credit");
-    setFilteredList(filteredData!);
-    setActiveBtn("Credit");
+    setActiveBtn("credit");
   };
 
   const onClickDebit = (): void => {
     const filteredData = allTxnsList!.filter((each) => each.type === "debit");
-    setFilteredList(filteredData);
-    setActiveBtn("Debit");
+    setActiveBtn("debit");
   };
 
   const onAllTxns = (): void => {
-    setFilteredList(allTxnsList!);
     setActiveBtn("AllTxn");
   };
 
@@ -130,7 +146,7 @@ const TransactionRouteList = () => {
             <th> </th>
             <th> </th>
           </tr>
-          {filteredlist.map((each) => (
+          {filteredlist?.map((each) => (
             <TransactionsRouteListItems key={each.id} item={each} />
           ))}
         </table>
@@ -167,4 +183,4 @@ const TransactionRouteList = () => {
   }
 };
 
-export default TransactionRouteList;
+export default observer(TransactionRouteList);

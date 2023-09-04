@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import useApiCall from "../UseApiCall";
-// import statusOfPage from "../../constants/apistatus";
-import useUserId from "../FetchUserId";
-import Status from "../../constants/apistatus";
+import useApiCall from "../../hooks/UseApiCall";
+import useUserId from "../../hooks/FetchUserId";
 import { TailSpin } from "react-loader-spinner";
 
 import {
@@ -17,29 +15,29 @@ import {
 import "./index.css";
 
 import GetReqFormat from "../../utils/recentTxnsDateConverter";
-import Details from "../../constants/detailstype";
+import Details from "../../types/detailstype";
 
 type DataObj = {
-  date: Date,
-  sum: number,
-  type: string
-}
+  date: Date;
+  sum: number;
+  type: string;
+};
 
-type FinalDataObj = { day: string; debit: number; credit: number; }
+type FinalDataObj = { day: string; debit: number; credit: number };
 
 type Data = {
-  last_7_days_transactions_credit_debit_totals: DataObj []
-}
- type FinalData = FinalDataObj []
+  last_7_days_transactions_credit_debit_totals: DataObj[];
+};
+type FinalData = FinalDataObj[];
 
 const ChartCard = () => {
-  const [last7DaysTxns, setLast7] = useState<FinalData| null >(null);
+  const [last7DaysTxns, setLast7] = useState<FinalData | null>(null);
   const [userCreds, setUserCreds] = useState<Details>(useUserId());
 
   const { response, apiCall, status } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/daywise-totals-7-days",
     method: "GET",
-    userId:userCreds!.userId,
+    userId: userCreds!.userId,
   });
 
   useEffect(() => {

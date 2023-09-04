@@ -1,44 +1,44 @@
 import { useEffect, useState } from "react";
-import useUserId from "../FetchUserId";
+import { TailSpin } from "react-loader-spinner";
+import { Navigate } from "react-router";
+import useUserId from "../../hooks/FetchUserId";
 
 import Navbar from "../Navbar";
 
 import Sidebar from "../Sidebar";
 
 import "./index.css";
-import useApiCall from "../UseApiCall";
-import { TailSpin } from "react-loader-spinner";
-import { Navigate } from "react-router";
+import useApiCall from "../../hooks/UseApiCall";
 
 type UserData = {
-  date_of_birth: string,
-  email: string,
-  id: number,
-  name: string,
-  country: string,
-  city: string,
-  present_address: string,
-  postal_code: string,
-  permanent_address: string
-}
+  date_of_birth: string;
+  email: string;
+  id: number;
+  name: string;
+  country: string;
+  city: string;
+  present_address: string;
+  postal_code: string;
+  permanent_address: string;
+};
 
 type Data = {
-  users: UserData[]
-}
+  users: UserData[];
+};
 
 const Profile = (): JSX.Element => {
-  const [userDetails, setUserDetails] = useState<UserData>()
+  const [userDetails, setUserDetails] = useState<UserData>();
 
   const userFromHook = useUserId();
   const { response, status, apiCall } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/profile",
     method: "GET",
-    userId:userFromHook!.userId,
+    userId: userFromHook!.userId,
   });
 
   useEffect(() => {
     if (response !== null) {
-      const result: Data = response
+      const result: Data = response;
       const user = {
         city: result.users[0].city,
         country: result.users[0].country,
@@ -117,7 +117,9 @@ const Profile = (): JSX.Element => {
           </label>
           <select className="input-element" id="DOB" name="dob">
             <option className="option-el" value="Dob">
-              {userDetails?.date_of_birth===undefined? "" : userDetails!.date_of_birth}
+              {userDetails?.date_of_birth === undefined
+                ? ""
+                : userDetails!.date_of_birth}
             </option>
           </select>
         </li>
@@ -130,7 +132,11 @@ const Profile = (): JSX.Element => {
             id="presentAddress"
             type="text"
             placeholder="Present Address"
-            value={userDetails?.present_address===undefined? "" : userDetails!.present_address}
+            value={
+              userDetails?.present_address === undefined
+                ? ""
+                : userDetails!.present_address
+            }
           />
         </li>
         <li className="user-bio-li-items">
@@ -142,7 +148,11 @@ const Profile = (): JSX.Element => {
             id="permanentAddress"
             type="text"
             placeholder="Permanent Address"
-            value={userDetails?.present_address===undefined? "": userDetails!.present_address}
+            value={
+              userDetails?.present_address === undefined
+                ? ""
+                : userDetails!.present_address
+            }
           />
         </li>
         <li className="user-bio-li-items">
@@ -154,7 +164,7 @@ const Profile = (): JSX.Element => {
             id="city"
             type="text"
             placeholder="City"
-            value={userDetails?.city===undefined? "":userDetails!.city}
+            value={userDetails?.city === undefined ? "" : userDetails!.city}
           />
         </li>
         <li className="user-bio-li-items">
@@ -166,7 +176,11 @@ const Profile = (): JSX.Element => {
             id="postal Code"
             type="text"
             placeholder="Postal Code"
-            value={userDetails?.postal_code===undefined? "" : userDetails!.postal_code}
+            value={
+              userDetails?.postal_code === undefined
+                ? ""
+                : userDetails!.postal_code
+            }
           />
         </li>
         <li className="user-bio-li-items">
@@ -191,7 +205,9 @@ const Profile = (): JSX.Element => {
     </div>
   );
 
-  const tryAgain = (): void => {apiCall()}
+  const tryAgain = (): void => {
+    apiCall();
+  };
 
   const renderFailedView = () => (
     <div>

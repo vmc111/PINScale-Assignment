@@ -1,18 +1,71 @@
-import CreditDebit from "../CreditDebit";
-
+import { useContext, useEffect } from "react";
 import { Navigate } from "react-router-dom";
+import { observer } from "mobx-react";
 
+import { TransactionStoreContext } from "../../context/StoresContext";
+import { DebitCredit, TransactionObj } from "../../types/storeConstants";
+import CreditDebit from "../CreditDebit";
 import TransactionsCard from "../TranscationsCard";
-import useUserId from "../FetchUserId";
+import useUserId from "../../hooks/FetchUserId";
 import ChartCard from "../ChartCard";
-
-import "./index.css";
 import Sidebar from "../Sidebar";
 import Navbar from "../Navbar";
+import Details from "../../types/detailstype";
+import useApiCall from "../../hooks/UseApiCall";
+import TransactionModel from "../../stores/models/TransactionObjectmodel";
+import "./index.css";
 
-import Details from "../../constants/detailstype";
+type InitialDataObj = {
+  amount: number;
+  id: number;
+  transaction_name: string;
+  user_id: number;
+  date: string;
+  type: "credit" | "debit";
+  category: string;
+};
+type Data = {
+  transactions: InitialDataObj[];
+};
 
 const Accounts = () => {
+  const store = useContext(TransactionStoreContext);
+
+  const userCreds = useUserId();
+  const { response, apiCall, status } = useApiCall({
+    url: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=1000&offset=0",
+    method: "GET",
+    userId: userCreds!.userId,
+  });
+
+  useEffect(() => {
+    apiCall();
+  }, []);
+
+  useEffect((): void => {
+    if (response !== null) {
+      const result: Data = response;
+      const txnData = result.transactions.map((each) => {
+        return {
+          amount: each.amount,
+          id: each.id,
+          transactionName: each.transaction_name,
+          userId: each.user_id,
+          date: each.date,
+          type: each.type,
+          category: each.category,
+        };
+      });
+      const sortedData: TransactionObj[] = txnData.sort((a, b) =>
+        new Date(a.date) < new Date(b.date) ? 1 : -1
+      );
+      const addTransactionList = sortedData.map(
+        (each) => new TransactionModel(each)
+      );
+      store?.setTransactionsList(addTransactionList);
+    }
+  }, [response]);
+
   const displayView = () => (
     <div className="account-container">
       <CreditDebit />
@@ -30,7 +83,7 @@ const Accounts = () => {
       <div className="container">
         <Sidebar />
         <div className="txn-container">
-          <Navbar title="Account"/>
+          <Navbar title="Account" />
 
           {displayView()}
         </div>
@@ -40,4 +93,4 @@ const Accounts = () => {
   return res;
 };
 
-export default Accounts;
+export default observer(Accounts);

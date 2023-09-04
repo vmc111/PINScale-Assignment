@@ -15,6 +15,7 @@ type Error = {
 }
 
 type APIBody = {
+  id?: number
    email?: string | undefined,
    password?: string | undefined,
    name?: string,
@@ -43,7 +44,7 @@ const useApiCall = (props: Props) => {
     setStatus("LOADING");
     setErrorMsg({ showErrorMsg: false, msg: "" });
     var myHeaders = new Headers();
-    myHeaders.append("content-type", "application/json");
+    myHeaders.append("Content-Type", "application/json");
     myHeaders.append(
       "x-hasura-admin-secret",
       "g08A3qQy00y8yFDq3y6N1ZQnhOPOa4msdie5EtKS1hFStar01JzPKrtKEzYY2BtF"
