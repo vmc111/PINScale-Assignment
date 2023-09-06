@@ -1,0 +1,53 @@
+.div-main {
+    height: 100vh;
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-image: url("https://media.wired.com/photos/5a0b89972a4bfb2ab084a088/master/w_2560%2Cc_limit/spacex-TA.jpg");
+    background-size: cover;
+    flex-wrap: nowrap;
+    position: fixed;
+}
+
+.div-launches-card{
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 80%;
+    height: 90vh;
+    position: fixed;
+    background-color: #ffffff;
+    border-radius: 10px;
+    list-style: none;
+}
+
+.launch-item{
+    padding: 6px 16px;
+    border: solid 1px rgba(13, 1, 14, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.links-div{
+    display: flex;
+    align-items: center;
+    margin: 0px;
+}
+
+.no-margin{
+    margin: 5px;
+}
+
+.link-margin{
+    margin: 0px 10px;
+}
+
+.loader-div{
+    width: 80%;
+    height: 20vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
