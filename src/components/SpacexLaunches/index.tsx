@@ -1,7 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 import { TailSpin } from "react-loader-spinner";
 import "./index.css";
-import { useEffect } from "react";
 
 interface Data {
   mission_name: string;
@@ -85,7 +84,6 @@ const SpaceXLaunches = () => {
                   data.launchesPast.length - 1 === ind &&
                   data.launchesPast.length < 187
                 ) {
-                  console.log("...Scrolling");
                   fetchMore({
                     variables: {
                       offset: data.launchesPast.length,
