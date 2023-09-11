@@ -120,6 +120,8 @@ const TransactionRouteList = () => {
     setActiveBtn("AllTxn");
   };
 
+  const retry = () => send({ type: "Retry" });
+
   const renderSuccessView = () => {
     const isAllTxnActive =
       "AllTxn" === activeBtn ? "txn-btn active-txn-btn" : "txn-btn";
@@ -176,11 +178,7 @@ const TransactionRouteList = () => {
 
   const renderFailedView = () => (
     <div>
-      <button
-        type="button"
-        className="btn"
-        onClick={() => send({ type: "Retry" })}
-      >
+      <button type="button" className="btn" onClick={() => retry()}>
         Try Again
       </button>
     </div>

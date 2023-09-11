@@ -79,13 +79,11 @@ const TxnList = () => {
     </div>
   );
 
+  const retry = () => send({ type: "Retry" });
+
   const renderFailedView = () => (
     <div>
-      <button
-        type="button"
-        className="btn"
-        onClick={() => send({ type: "Retry" })}
-      >
+      <button type="button" className="btn" onClick={() => retry()}>
         Try Again
       </button>
     </div>

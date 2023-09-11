@@ -8,7 +8,7 @@ interface ErrorMsg {
 }
 
 export const transactionsMachine = createMachine({
-    /** @xstate-layout N4IgpgJg5mDOIC5QBcBOBDAdrdBjZAlgPbYB0ANkehAZlAMQQlim0BuRA1i2ljvsTKVqtKAnZFc6QiQDaABgC6CxYlAAHIrAIzMakAA9EANnmljAVgAcAZmNWALACYAnA-n2PAGhABPRBakAIwWAOyhtk4W8i42TsYuFgC+ST682Hi6sBRUNHT0YKioRKik6uTSAGYlALak6fxZOSJ04pgcUroqKvqa2rr6RggAtDYxpE4Ooc72lvJWoUHGPv4IQWOkVk42oRamQfLrtqEpaRgZAiTZlWDIuAAWAGLoBOSQ9ABKt6i+PUggfR0gkGiFGEVI8nkoUS8lcixsFkSK0QDgmbhsVgsDhssVCTlhSxSqRAmCIEDg+gamUE8H+gIG-yGwxmEKhMLh60RFmRI1sE3kexC1gSQUmNlOICplyEuVEvS0QJIIJG61CpAsYwcDmMQTxiSsBp5DismwOLic0z2HkmLglUqaNzu9wAygBXXC4OC0jQKhmgIac4KOCyuCzrFz2ULLPyIUI2YIa3aueR2LXJYn2mmkR0PZ6vSDy-rAxmguwuUjucJBEJWFzm6IOHlxhM7EMuFPGNNEpJAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QBcBOBDAdrdBjZAlgPbYB0ANkehAZlAMQQlim0BuRA1i2ljvsTKVqtKAnZFc6QiQDaABgC6CxYlAAHIrAIzMakAA9EAWgCMAJgAspeefnyAzAA4np0wFZzANicAaEACeiKYA7CGkTlaW7vKRAJzmCXEAvsn+vNh4urAUVDR09GCoqESopOrk0gBmpQC2pBn82bkidOKYHFK6Kir6mtq6+kYIZuYOpA7uDg4hll7RpnHuXv5BI4ukoV7mU16L8qby7qap6RiZAiQ5VWDIuAAWAGLoBOSQ9ABKt6gBvUgg-R0giGJgc8i8NnkITi0S8IWOlkRIVWwXMTlIcT2sXk0QccSclhCqTSIEwRAgcH0jSygng-0Bg3+w2MllCpEsUJCbncTjiCRilhR63BE0siSsUI8djCpxA1MuQjyoj6WiBJBB6xmpCmOLmoUSPJcQss6Nc8gSs2W4KsKRJ8uaNzu9wAygBXXC4OB0jSqxmgYamSabAmeJaBzFOEIrQKIELjDwzUOOebRWX22mkR0PZ6vSAqgbApmgrxxdmc7m8-k4oVxzZTeGJZOI9zE5JAA */
     id: 'transactions',
     context: {
         data: {},
@@ -19,7 +19,7 @@ export const transactionsMachine = createMachine({
         events: {} as {type: 'Retry'},
         services: {} as {
             fetchData:{
-                data:any
+                data:{}
             }
         }
         },
@@ -38,7 +38,9 @@ export const transactionsMachine = createMachine({
                 ]
             }
         },
-        fetchSuccess: {},
+        fetchSuccess: {
+            type: "final"
+        },
         fetchFailed: {
             on: {
                 Retry: {target: "loading", actions: 'trigerred'}
