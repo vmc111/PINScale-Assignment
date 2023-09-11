@@ -1,5 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { observer } from "mobx-react";
+import { useMachine } from "@xstate/react";
 
 import { TailSpin } from "react-loader-spinner";
 import useUserId from "../../hooks/FetchUserId";
@@ -11,6 +12,7 @@ import "./index.css";
 import { TransactionStoreContext } from "../../context/StoresContext";
 import { DebitCredit, TransactionObj } from "../../types/storeConstants";
 import TransactionModel from "../../stores/models/TransactionObjectmodel";
+import { transactionsMachine } from "../../machines/transactionsMachine";
 
 type TransactionsObjs = {
   amount: number;
@@ -29,20 +31,31 @@ const TxnList = () => {
   const store = useContext(TransactionStoreContext);
   const listOfTransactions = store?.lastThreeTransactions;
   const userCreds = useUserId();
-  const { response, apiCall, status } = useApiCall({
+  const { apiCall } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=100&offset=0",
     method: "GET",
     userId: userCreds!.userId,
   });
 
-  useEffect(() => {
-    apiCall();
-  }, []);
+  const [state, send] = useMachine(transactionsMachine, {
+    services: {
+      fetchData: async () => {
+        const data = await apiCall();
+        return new Promise((resolve, reject) => {
+          if (data !== null && data !== undefined) {
+            resolve(data);
+          } else {
+            reject("Failed to fetch....");
+          }
+        });
+      },
+    },
+  });
 
   useEffect(() => {
-    if (response !== null) {
-      const result: Transactions = response;
-      const txnData: TransactionObj[] = result.transactions.map((each) => {
+    if (state.matches("fetchSuccess")) {
+      const result: Transactions = state.context.data as Transactions;
+      const txnData: TransactionObj[] = result?.transactions.map((each) => {
         return {
           amount: each.amount,
           id: each.id,
@@ -58,7 +71,7 @@ const TxnList = () => {
       );
       store?.setTransactionsList(addToTransactionList);
     }
-  }, [response]);
+  }, [state]);
 
   const renderLoadingView = () => (
     <div className="loader">
@@ -66,13 +79,13 @@ const TxnList = () => {
     </div>
   );
 
-  const tryAgain = () => {
-    apiCall();
-  };
-
   const renderFailedView = () => (
     <div>
-      <button type="button" className="btn" onClick={() => tryAgain()}>
+      <button
+        type="button"
+        className="btn"
+        onClick={() => send({ type: "Retry" })}
+      >
         Try Again
       </button>
     </div>
@@ -89,19 +102,13 @@ const TxnList = () => {
     );
   };
 
-  switch (status) {
-    case "LOADING":
-      return renderLoadingView();
-
-    case "SUCCESS":
-      return renderSucccessView();
-
-    case "FAILED":
-      return renderFailedView();
-
-    default:
-      return renderLoadingView();
+  if (state.matches("loading")) {
+    return renderLoadingView();
+  } else if (state.matches("fetchSuccess")) {
+    return renderSucccessView();
   }
+
+  return renderFailedView();
 };
 
 export default observer(TxnList);
