@@ -35,7 +35,7 @@ const Accounts = () => {
   const { response, apiCall, status } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/all-transactions?limit=1000&offset=0",
     method: "GET",
-    userId: userCreds!.userId,
+    userId: userCreds?.userId,
   });
 
   const displayView = () => (
@@ -45,8 +45,7 @@ const Accounts = () => {
       <ChartCard />
     </div>
   );
-
-  const jwtToken: Details = useUserId();
+  const jwtToken = userCreds;
 
   const res =
     jwtToken === undefined ? (

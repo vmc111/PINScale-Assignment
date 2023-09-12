@@ -33,7 +33,7 @@ const Profile = (): JSX.Element => {
   const { response, status, apiCall } = useApiCall({
     url: "https://bursting-gelding-24.hasura.app/api/rest/profile",
     method: "GET",
-    userId: userFromHook!.userId,
+    userId: userFromHook?.userId,
   });
 
   useEffect(() => {
