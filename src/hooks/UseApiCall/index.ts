@@ -37,7 +37,7 @@ type Props = {
 const useApiCall = (props: Props) => {
   const { url, method, body, userId, headers } = props;
   const [status, setStatus] = useState<Status>("INITIAL");
-  const [response, setResponse] = useState(null);
+  const [response, setResponse] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<Error>({ showErrorMsg: false, msg: "" });
 
   const apiCall = async () => {
@@ -63,9 +63,11 @@ const useApiCall = (props: Props) => {
     if (res.ok) {
       setResponse(data);
       setStatus("SUCCESS");
+      return data
     } else {
       setStatus("FAILED");
       setErrorMsg({ showErrorMsg: true, msg: data.error });
+      return null
     }
   };
 

@@ -38,34 +38,6 @@ const Accounts = () => {
     userId: userCreds!.userId,
   });
 
-  useEffect(() => {
-    apiCall();
-  }, []);
-
-  useEffect((): void => {
-    if (response !== null) {
-      const result: Data = response;
-      const txnData = result.transactions.map((each) => {
-        return {
-          amount: each.amount,
-          id: each.id,
-          transactionName: each.transaction_name,
-          userId: each.user_id,
-          date: each.date,
-          type: each.type,
-          category: each.category,
-        };
-      });
-      const sortedData: TransactionObj[] = txnData.sort((a, b) =>
-        new Date(a.date) < new Date(b.date) ? 1 : -1
-      );
-      const addTransactionList = sortedData.map(
-        (each) => new TransactionModel(each)
-      );
-      store?.setTransactionsList(addTransactionList);
-    }
-  }, [response]);
-
   const displayView = () => (
     <div className="account-container">
       <CreditDebit />

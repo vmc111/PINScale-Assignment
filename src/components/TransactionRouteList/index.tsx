@@ -11,6 +11,8 @@ import useUserId from "../../hooks/FetchUserId";
 import { TransactionStoreContext } from "../../context/StoresContext";
 import { DebitCredit } from "../../types/storeConstants";
 import TransactionModel from "../../stores/models/TransactionObjectmodel";
+import { useMachine } from "@xstate/react";
+import { transactionsMachine } from "../../machines/transactionsMachine";
 
 type Filter = DebitCredit | "AllTxn";
 
@@ -63,14 +65,24 @@ const TransactionRouteList = () => {
     method: "GET",
     userId: userCreds!.userId,
   });
+  const [state, send] = useMachine(transactionsMachine, {
+    services: {
+      fetchData: async () => {
+        const data = await apiCall();
+        return new Promise((resolve, reject) => {
+          if (data !== null && data !== undefined) {
+            resolve(data);
+          } else {
+            reject("Failed to fetch....");
+          }
+        });
+      },
+    },
+  });
 
   useEffect(() => {
-    apiCall();
-  }, []);
-
-  useEffect(() => {
-    if (response !== null) {
-      const result: Data = response;
+    if (state.matches("fetchSuccess")) {
+      const result: Data = state.context.data as Data;
       const txnData = result.transactions.map((each) => {
         return {
           amount: each.amount,
@@ -92,7 +104,7 @@ const TransactionRouteList = () => {
       store?.setTransactionsList(addToTransactionList);
       setActiveBtn("AllTxn");
     }
-  }, [response]);
+  }, [state]);
 
   const onClickCredit = (): void => {
     const filteredData = allTxnsList!.filter((each) => each.type === "credit");
@@ -107,6 +119,8 @@ const TransactionRouteList = () => {
   const onAllTxns = (): void => {
     setActiveBtn("AllTxn");
   };
+
+  const retry = () => send({ type: "Retry" });
 
   const renderSuccessView = () => {
     const isAllTxnActive =
@@ -164,23 +178,19 @@ const TransactionRouteList = () => {
 
   const renderFailedView = () => (
     <div>
-      <button type="button" className="btn" onClick={tryAgain}>
+      <button type="button" className="btn" onClick={() => retry()}>
         Try Again
       </button>
     </div>
   );
 
-  switch (status) {
-    case "LOADING":
-      return renderLoadingView();
-    case "SUCCESS":
-      return renderSuccessView();
-    case "FAILED":
-      return renderFailedView();
-
-    default:
-      return renderLoadingView();
+  if (state.matches("fetchSuccess")) {
+    return renderSuccessView();
+  } else if (state.matches("loading")) {
+    return renderLoadingView();
   }
+
+  return renderFailedView();
 };
 
 export default observer(TransactionRouteList);
