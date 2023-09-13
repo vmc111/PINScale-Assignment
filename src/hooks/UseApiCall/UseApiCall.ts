@@ -1,6 +1,5 @@
 import { useState } from "react";
-// import Status from "../../constants/apistatus";
-import Status from "../../constants/apistatus";
+import { Status } from "../../types/detailstype";
 
 type Headers = {
     "Content-Type": string;
@@ -52,7 +51,7 @@ const useApiCall = (props: Props) => {
     myHeaders.append("x-hasura-role", "user");
     myHeaders.append("x-hasura-user-id", `${userId}`);
 
-    var requestOptions:RequestInit = {
+    let requestOptions:RequestInit = {
       method,
       headers: headers === undefined ? myHeaders : headers,
       redirect: "follow",

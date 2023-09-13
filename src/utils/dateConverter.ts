@@ -1,4 +1,4 @@
-const Months = [
+const months = [
   "Jan",
   "Feb",
   "Mar",
@@ -13,11 +13,11 @@ const Months = [
   "Dec",
 ];
 
-const DateConverter = (dategiven: string) => {
+const dateConverter = (dategiven: string) => {
   const d = new Date(dategiven);
 
   const date = d.getDate();
-  const month = Months[d.getMonth()];
+  const month = months[d.getMonth()];
 
   const hr = d.getHours();
 
@@ -28,4 +28,4 @@ const DateConverter = (dategiven: string) => {
   return `${date} ${month}, ${hr % 12}:${mins} ${ampm}`;
 };
 
-export default DateConverter;
+export default dateConverter;
