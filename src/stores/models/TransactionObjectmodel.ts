@@ -1,6 +1,6 @@
 import { action, makeObservable, observable } from "mobx";
 
-import { DebitCredit, TransactionObj } from "../../types/storeConstants";
+import { DebitCredit, TransactionObj } from "../../types/StoreConstants";
 
 class TransactionModel {
     id: number

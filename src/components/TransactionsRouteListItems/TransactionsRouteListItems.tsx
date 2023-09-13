@@ -10,7 +10,7 @@ import useUserId from "../../hooks/FetchUserId/UseUserId";
 import "./index.css";
 import DeletePopup from "../DeletePopUp/DeletePopup";
 import dateConverter from "../../utils/dateConverter";
-import { DebitCredit } from "../../types/storeConstants";
+import { DebitCredit } from "../../types/StoreConstants";
 
 type Item = {
   amount: number;

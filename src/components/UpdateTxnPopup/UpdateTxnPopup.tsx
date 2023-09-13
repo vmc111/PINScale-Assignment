@@ -6,7 +6,7 @@ import { MdOutlineModeEditOutline } from "react-icons/md";
 import "reactjs-popup/dist/index.css";
 
 import "./index.css";
-import { DebitCredit, TransactionObj } from "../../types/storeConstants";
+import { DebitCredit, TransactionObj } from "../../types/StoreConstants";
 import useApiCall from "../../hooks/UseApiCall/UseApiCall";
 import { TransactionStoreContext } from "../../context/StoresContext";
 import useUserId from "../../hooks/FetchUserId/UseUserId";

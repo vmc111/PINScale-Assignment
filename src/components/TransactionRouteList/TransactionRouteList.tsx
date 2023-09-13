@@ -9,7 +9,7 @@ import TransactionsRouteListItems from "../TransactionsRouteListItems/Transactio
 import "./index.css";
 import useUserId from "../../hooks/FetchUserId/UseUserId";
 import { TransactionStoreContext } from "../../context/StoresContext";
-import { DebitCredit } from "../../types/storeConstants";
+import { DebitCredit } from "../../types/StoreConstants";
 import TransactionModel from "../../stores/models/TransactionObjectmodel";
 import { useMachine } from "@xstate/react";
 import { transactionsMachine } from "../../machines/TransactionsMachine";

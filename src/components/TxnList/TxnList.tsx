@@ -10,7 +10,7 @@ import TransactionsRouteListItems from "../TransactionsRouteListItems/Transactio
 
 import "./index.css";
 import { TransactionStoreContext } from "../../context/StoresContext";
-import { DebitCredit, TransactionObj } from "../../types/storeConstants";
+import { DebitCredit, TransactionObj } from "../../types/StoreConstants";
 import TransactionModel from "../../stores/models/TransactionObjectmodel";
 import { transactionsMachine } from "../../machines/TransactionsMachine";
 

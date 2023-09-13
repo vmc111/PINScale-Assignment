@@ -12,7 +12,7 @@ import "reactjs-popup/dist/index.css";
 
 import useUserId from "../../hooks/FetchUserId/UseUserId";
 import { TransactionStoreContext } from "../../context/StoresContext";
-import { DebitCredit, TransactionObj } from "../../types/storeConstants";
+import { DebitCredit, TransactionObj } from "../../types/StoreConstants";
 import TransactionModel from "../../stores/models/TransactionObjectmodel";
 import "./index.css";
 
