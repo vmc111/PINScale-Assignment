@@ -15,7 +15,7 @@ import {
 import "./index.css";
 
 import recentTxnsDateConverter from "../../utils/recentTxnsDateConverter";
-import { Details } from "../../types/Detailstype";
+import { Details } from "../../types/Types";
 
 type DataObj = {
   date: Date;

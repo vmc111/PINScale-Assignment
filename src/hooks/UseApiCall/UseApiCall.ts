@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Status } from "../../types/Detailstype";
+import { useState } from "react"
+import { Status } from '../../types/Types';
 
 type Headers = {
     "Content-Type": string;
