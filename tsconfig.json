@@ -20,5 +20,5 @@
     "noEmit": true,
     "useDefineForClassFields": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "src/components/Accounts/Accounts.tsx"]
 }
