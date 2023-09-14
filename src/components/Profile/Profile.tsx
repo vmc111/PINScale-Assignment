@@ -234,7 +234,7 @@ const Profile = (): JSX.Element => {
   return userFromHook === undefined ? (
     <Navigate to={"/login"} />
   ) : (
-    <div className="container fixed w-screen">
+    <div className="container fixed w-screens">
       <Sidebar />
       <div className="txn-container">
         <Navbar title="Profile" />

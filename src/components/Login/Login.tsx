@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { TailSpin as Loader } from "react-loader-spinner";
 import Cookies from "js-cookie";
-
+import { useTranslation } from "react-i18next";
 import "./index.css";
 import useApiCall from "../../hooks/UseApiCall/UseApiCall";
 import useUserId from "../../hooks/FetchUserId/UseUserId";
@@ -21,6 +21,7 @@ type Data = {
 };
 
 const Login = () => {
+  const { t, i18n } = useTranslation();
   const [email, setEmail] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -29,6 +30,12 @@ const Login = () => {
     msg: "",
   });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const ln = navigator.language;
+    console.log(ln);
+    i18n.changeLanguage(ln);
+  }, [i18n]);
 
   const { response, status, apiCall, errorMsg } = useApiCall({
     url: `https://bursting-gelding-24.hasura.app/api/rest/get-user-id`,
@@ -114,7 +121,7 @@ const Login = () => {
         >
           <div className=" w-full lg:w-72 flex flex-col items-start mb-3 mt-3">
             <label htmlFor="username" className="from-neutral-700 text-lg">
-              Email
+              {t("email")}
             </label>
             <input
               value={email}
@@ -122,12 +129,12 @@ const Login = () => {
               className="bg-transparent h-auto w-56 lg:w-64 p-3 text-sm mb-1 rounded border-solid"
               id="username"
               type="email"
-              placeholder="Email"
+              placeholder={t("emailPlaceholder")}
             />
           </div>
           <div className="w-full lg:w-72 flex flex-col items-start mb-3 mt-3">
             <label htmlFor="password" className="from-neutral-700 text-lg">
-              Password
+              {t("password")}
             </label>
             <input
               value={password}
@@ -135,7 +142,7 @@ const Login = () => {
               className="bg-transparent h-auto w-56 lg:w-64 p-3 text-sm mb-1 rounded border-solid"
               id="password"
               type="password"
-              placeholder="Password"
+              placeholder={t("passwordPlaceHolder")}
             />
           </div>
           <div className=" w-full lg:w-72 flex flex-col items-start mb-3 mt-3">
@@ -148,13 +155,13 @@ const Login = () => {
                 className="bg-transparent h-auto w-full lg:w-64 p-3 text-sm mb-1 rounded border-solid"
                 value="true"
               >
-                Admin
+                {t("admin")}
               </option>
               <option
                 className="bg-transparent h-auto w-full lg:w-64 p-3 text-sm mb-1 rounded border-solid"
                 value={"false"}
               >
-                User
+                {t("user")}
               </option>
             </select>
           </div>
@@ -162,7 +169,7 @@ const Login = () => {
             className="text-xs lg:text-xl my-2 py-2 px-12 rounded-md font-medium border-none cursor-pointer bg-teal-600 hover:bg-yellow-600 text-stone-50"
             type="submit"
           >
-            Login
+            {t("login")}
           </button>
           {errorMsg.showErrorMsg ? (
             <p className=" text-base text-red-600">*{errorMsg.msg}</p>
