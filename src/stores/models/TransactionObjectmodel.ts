@@ -1,6 +1,6 @@
 import { action, makeObservable, observable } from "mobx";
 
-import { DebitCredit, TransactionObj } from "../../types/storeConstants";
+import { DebitCredit, TransactionObj } from "../../types/StoreConstants";
 
 class TransactionModel {
     id: number
@@ -13,9 +13,8 @@ class TransactionModel {
 
     constructor(transaction: TransactionObj){
         makeObservable(this, {
-            id: observable,
             transactionName: observable,
-            type:observable ,amount : observable  ,userId : observable   ,date : observable    ,category : observable,
+            type:observable ,amount : observable  ,date : observable    ,category : observable,
             setType: action.bound,
             setAmount: action.bound,
             setTransactionName: action.bound,

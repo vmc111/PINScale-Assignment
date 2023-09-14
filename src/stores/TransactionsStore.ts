@@ -1,6 +1,6 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import { TransactionObj } from "../types/storeConstants";
 import TransactionModel from "./models/TransactionObjectmodel";
+import { TransactionObj } from "../types/StoreConstants";
 
 
 
